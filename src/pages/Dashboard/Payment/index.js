@@ -1,23 +1,74 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
 
 export default function Payment() {
+  const buttonChoices = [
+    {
+      type: 'remote',
+      description: 'Presencial',
+      price: 250,
+    },
+    {
+      type: 'remote',
+      description: 'Online',
+      price: 100,
+    },
+    {
+      type: 'hotel',
+      description: 'Sem Hotel',
+      price: 0,
+    },
+    {
+      type: 'hotel',
+      description: 'Com Hotel',
+      price: 350,
+    },
+  ];
+
+  const [ticketChoice, setTicketChoice] = useState({
+    remote: false,
+    hotel: false,
+    price: 0,
+  });
+
+  //eslint-disable-next-line no-console
+  console.log(ticketChoice);
+
   return (
     <Wrapper>
       <h1>Ingresso e Pagamento</h1>
       <h4>Primeiro, escolha sua modalidade de ingresso</h4>
       <Choices>
-        <ChoiceBox />
-        <ChoiceBox />
+        {buttonChoices
+          .filter((item) => item.type === 'remote')
+          .map((item) => (
+            <ChoiceBox
+              description={item.description}
+              price={Number(item.price)}
+              type={item.type}
+              setTicketChoice={setTicketChoice}
+              ticketChoice={ticketChoice}
+            />
+          ))}
       </Choices>
       <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
       <Choices>
-        <ChoiceBox />
-        <ChoiceBox />
+        {buttonChoices
+          .filter((item) => item.type === 'hotel')
+          .map((item) => (
+            <ChoiceBox
+              description={item.description}
+              price={item.price}
+              type={item.type}
+              setTicketChoice={setTicketChoice}
+              ticketChoice={ticketChoice}
+            />
+          ))}
       </Choices>
       <div>
         <h4>
-          Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:
+          Fechado! O total ficou em <strong>{ticketChoice.price}</strong>. Agora é só confirmar:
         </h4>
         <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
       </div>
@@ -28,18 +79,16 @@ export default function Payment() {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  font-family: 'Roboto';
+  font-weight: 400;
 
   h1 {
-    font-family: 'Roboto';
-    font-weight: 400;
     font-size: 30px;
     line-height: 40px;
     color: #000000;
   }
 
   h4 {
-    font-family: 'Roboto';
-    font-weight: 400;
     font-size: 18px;
     line-height: 23px;
     color: #8e8e8e;
