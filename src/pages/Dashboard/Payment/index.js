@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ChoiceBox from '../../../components/Payment/ChoiceBox';
 
 export default function Payment() {
   return (
@@ -6,25 +7,13 @@ export default function Payment() {
       <h1>Ingresso e Pagamento</h1>
       <h4>Primeiro, escolha sua modalidade de ingresso</h4>
       <Choices>
-        <ChoiceBox>
-          <p>Presencial</p>
-          <p>R$ 250</p>
-        </ChoiceBox>
-        <ChoiceBox>
-          <p>Online</p>
-          <p>R$ 100</p>
-        </ChoiceBox>
+        <ChoiceBox />
+        <ChoiceBox />
       </Choices>
       <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
       <Choices>
-        <ChoiceBox>
-          <p>Sem Hotel</p>
-          <p>+ R$ 0</p>
-        </ChoiceBox>
-        <ChoiceBox>
-          <p>Com Hotel</p>
-          <p>+ R$ 350</p>
-        </ChoiceBox>
+        <ChoiceBox />
+        <ChoiceBox />
       </Choices>
       <div>
         <h4>
@@ -60,29 +49,6 @@ const Wrapper = styled.div`
 
 const Choices = styled.div`
   display: flex;
-`;
-
-const ChoiceBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #cecece;
-  border-radius: 20px;
-  width: 145px;
-  height: 145px;
-  margin: 12px;
-
-  font-family: 'Roboto';
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 19px;
-  text-align: center;
-  color: #454545;
-
-  p:nth-child(2) {
-    color: #898989;
-  }
 `;
 
 const ConfirmButton = styled.button`
