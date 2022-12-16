@@ -1,31 +1,38 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-export default function ChoiceBox({ type, description, price, setTicketChoice, ticketChoice }) {
+export default function ChoiceBox({
+  type,
+  description,
+  price,
+  setTicketChoice,
+  ticketChoice
+}) {
   const [selected, setSelected] = useState(false);
 
   function clickButton() {
     setSelected(!selected);
+
     if (!selected) {
       if (type === 'remote') {
         setTicketChoice({
           remote: description === 'Online' ? true : false,
           hotel: ticketChoice.hotel,
-          price: ticketChoice.price += price,
+          price: (ticketChoice.price += price),
         });
       }
       if (type === 'hotel') {
         setTicketChoice({
           remote: ticketChoice.remote,
           hotel: description === 'Com Hotel' ? true : false,
-          price: ticketChoice.price += price,
+          price: (ticketChoice.price += price),
         });
       }
     } else {
       setTicketChoice({
         remote: ticketChoice.remote,
         hotel: ticketChoice.hotel,
-        price: ticketChoice.price -= price,
+        price: (ticketChoice.price -= price),
       });
     }
   }

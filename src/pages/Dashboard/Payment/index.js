@@ -52,26 +52,28 @@ export default function Payment() {
             />
           ))}
       </Choices>
-      <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
-      <Choices>
-        {buttonChoices
-          .filter((item) => item.type === 'hotel')
-          .map((item) => (
-            <ChoiceBox
-              description={item.description}
-              price={item.price}
-              type={item.type}
-              setTicketChoice={setTicketChoice}
-              ticketChoice={ticketChoice}
-            />
-          ))}
-      </Choices>
-      <div>
+      <SecondStep price={ticketChoice.price} remote={ticketChoice.remote}>
+        <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
+        <Choices>
+          {buttonChoices
+            .filter((item) => item.type === 'hotel')
+            .map((item) => (
+              <ChoiceBox
+                description={item.description}
+                price={item.price}
+                type={item.type}
+                setTicketChoice={setTicketChoice}
+                ticketChoice={ticketChoice}
+              />
+            ))}
+        </Choices>
+      </SecondStep>
+      <ThirdStep price={ticketChoice.price}>
         <h4>
           Fechado! O total ficou em <strong>{ticketChoice.price}</strong>. Agora é só confirmar:
         </h4>
         <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
-      </div>
+      </ThirdStep>
     </Wrapper>
   );
 }
@@ -81,6 +83,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   font-family: 'Roboto';
   font-weight: 400;
+  width: 100%;
 
   h1 {
     font-size: 30px;
@@ -114,4 +117,14 @@ const ConfirmButton = styled.button`
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 4px;
+`;
+
+const SecondStep = styled.div`
+  display: ${props => props.price === 0 || props.remote === true ? 'none' : 'flex'};
+  flex-direction: column;
+`;
+
+const ThirdStep = styled.div`
+  display: ${props => props.price === 0 ? 'none' : 'flex'};
+  flex-direction: column;
 `;
