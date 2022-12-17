@@ -2,45 +2,23 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 export default function ChoiceBox({
-  type,
   description,
   price,
-  setTicketChoice,
-  ticketChoice
+  selectState,
+  disable,
 }) {
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(selectState);
 
   function clickButton() {
-    setSelected(!selected);
-
-    if (!selected) {
-      if (type === 'remote') {
-        setTicketChoice({
-          remote: description === 'Online' ? true : false,
-          hotel: ticketChoice.hotel,
-          price: (ticketChoice.price += price),
-        });
-      }
-      if (type === 'hotel') {
-        setTicketChoice({
-          remote: ticketChoice.remote,
-          hotel: description === 'Com Hotel' ? true : false,
-          price: (ticketChoice.price += price),
-        });
-      }
-    } else {
-      setTicketChoice({
-        remote: ticketChoice.remote,
-        hotel: ticketChoice.hotel,
-        price: (ticketChoice.price -= price),
-      });
+    if (!disable) {
+      setSelected(!selected);
     }
   }
 
   return (
-    <Wrapper onClick={clickButton} selected={selected}>
+    <Wrapper onClick={clickButton} selected={selected} disable={disable}>
       <p>{description}</p>
-      <p>{type === 'hotel' ? `+ R$ ${price}` : `R$ ${price}`}</p>
+      <p>{`R$ ${price}`}</p>
     </Wrapper>
   );
 }
@@ -52,7 +30,7 @@ const Wrapper = styled.button`
   align-items: center;
   border: ${(props) => (props.selected ? 'none' : '1px solid #cecece')};
   border-radius: 20px;
-  width: 145px;
+  width: ${(props) => (props.disable ? '285px' : '145px')};
   height: 145px;
   margin: 12px;
 
@@ -66,6 +44,7 @@ const Wrapper = styled.button`
   color: #454545;
 
   p:nth-child(2) {
+    margin-top: 8px;
     color: #898989;
   }
 `;

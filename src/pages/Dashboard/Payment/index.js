@@ -12,7 +12,6 @@ export default function Payment() {
     useEffect(async() => {
       const result = await payment();
       setPaymentDone(result);
-      console.log(result);
     }, []);
    
     return (
@@ -22,14 +21,17 @@ export default function Payment() {
           {paymentLoading && <StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
         </span> :
           <>
-            {paymentDone != '' ? <>
+            {paymentDone !== '' ? <>
               <h4>Ingresso escolhido</h4>
               <Choices>
                 <ChoiceBox
-                  description={'paymentDone.TicketType.isRemote'}
+                  description={(paymentDone.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentDone.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
                   price={Number(paymentDone.TicketType.price)}
+                  selectState={true}
+                  disable={true}
                 />
               </Choices>
+              <h4>Pagamento</h4>
             </> : 'payment.data.status'}
           </>
         }
