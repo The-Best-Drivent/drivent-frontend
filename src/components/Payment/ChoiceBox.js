@@ -1,18 +1,51 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-export default function ChoiceBox() {
+export default function ChoiceBox({
+  type,
+  description,
+  price,
+  setTicketChoice,
+  ticketChoice
+}) {
   const [selected, setSelected] = useState(false);
 
+  function clickButton() {
+    setSelected(!selected);
+
+    if (!selected) {
+      if (type === 'remote') {
+        setTicketChoice({
+          remote: description === 'Online' ? true : false,
+          hotel: ticketChoice.hotel,
+          price: (ticketChoice.price += price),
+        });
+      }
+      if (type === 'hotel') {
+        setTicketChoice({
+          remote: ticketChoice.remote,
+          hotel: description === 'Com Hotel' ? true : false,
+          price: (ticketChoice.price += price),
+        });
+      }
+    } else {
+      setTicketChoice({
+        remote: ticketChoice.remote,
+        hotel: ticketChoice.hotel,
+        price: (ticketChoice.price -= price),
+      });
+    }
+  }
+
   return (
-    <Wrapper onClick={() => setSelected(!selected)} selected={selected}>
-      <p>Presencial</p>
-      <p>R$ 250</p>
+    <Wrapper onClick={clickButton} selected={selected}>
+      <p>{description}</p>
+      <p>{type === 'hotel' ? `+ R$ ${price}` : `R$ ${price}`}</p>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.button`
   display: flex;
   flex-direction: column;
   justify-content: center;

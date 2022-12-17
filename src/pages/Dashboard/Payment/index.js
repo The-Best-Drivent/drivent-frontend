@@ -1,28 +1,43 @@
 import styled from 'styled-components';
+import Loader from 'react-loader-spinner';
+import usePaymentPaid from '../../../hooks/api/usePayment';
+import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
 
 export default function Payment() {
-  return (
-    <Wrapper>
-      <h1>Ingresso e Pagamento</h1>
-      <h4>Primeiro, escolha sua modalidade de ingresso</h4>
-      <Choices>
-        <ChoiceBox />
-        <ChoiceBox />
-      </Choices>
-      <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
-      <Choices>
-        <ChoiceBox />
-        <ChoiceBox />
-      </Choices>
-      <div>
-        <h4>
-          Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:
-        </h4>
-        <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
-      </div>
-    </Wrapper>
-  );
+  const { paymentLoading, payment } = usePaymentPaid();
+  const [ paymentDone, setPaymentDone] = useState('');
+
+  try {
+    useEffect(async() => {
+      const result = await payment();
+      setPaymentDone(result);
+      console.log(result);
+    }, []);
+   
+    return (
+      <Wrapper>
+        <h1>Ingresso e Pagamento</h1>
+        {paymentLoading ? <span>
+          {paymentLoading && <StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
+        </span> :
+          <>
+            {paymentDone != '' ? <>
+              <h4>Ingresso escolhido</h4>
+              <Choices>
+                <ChoiceBox
+                  description={'paymentDone.TicketType.isRemote'}
+                  price={Number(paymentDone.TicketType.price)}
+                />
+              </Choices>
+            </> : 'payment.data.status'}
+          </>
+        }
+      </Wrapper>
+    );
+  } catch (error) {
+
+  }
 }
 
 const Wrapper = styled.div`
@@ -45,6 +60,17 @@ const Wrapper = styled.div`
     color: #8e8e8e;
     margin: 16px 0;
   }
+
+  span {
+    margin-top: 30%;
+    display: flex;
+    justify-content: center;
+  }
+
+  span * {
+   
+    margin-right: 8px;
+  }
 `;
 
 const Choices = styled.div`
@@ -65,4 +91,9 @@ const ConfirmButton = styled.button`
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 4px;
+`;
+
+const StyledLoader = styled(Loader)`
+  position: relative;
+  top: -4.5px;
 `;
