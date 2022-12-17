@@ -1,24 +1,26 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
 export default function ChoiceBox({
   description,
   price,
   selectState,
+  selector,
   disable,
 }) {
-  const [selected, setSelected] = useState(selectState);
-
   function clickButton() {
-    if (!disable) {
-      setSelected(!selected);
+    if (!disable && !selectState && selector) {
+      if (description === 'Presencial' || description === 'Sem Hotel') {
+        selector(!selectState);
+      } else {
+        selector(selectState);
+      }
     }
   }
 
   return (
-    <Wrapper onClick={clickButton} selected={selected} disable={disable}>
+    <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{`R$ ${price}`}</p>
+      <p>{price}</p>
     </Wrapper>
   );
 }
@@ -28,13 +30,13 @@ const Wrapper = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: ${(props) => (props.selected ? 'none' : '1px solid #cecece')};
+  border: ${(props) => (props.selected && props.disable ? 'none' : '1px solid #cecece')};
   border-radius: 20px;
   width: ${(props) => (props.disable ? '285px' : '145px')};
   height: 145px;
   margin: 12px;
 
-  background-color: ${(props) => (props.selected ? '#FFEED2' : '#FFFFFF')};
+  background-color: ${(props) => (props.selected || props.disable ? '#FFEED2' : '#FFFFFF')};
 
   font-family: 'Roboto';
   font-weight: 400;

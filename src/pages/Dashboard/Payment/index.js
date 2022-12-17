@@ -7,6 +7,9 @@ import ChoiceBox from '../../../components/Payment/ChoiceBox';
 export default function Payment() {
   const { paymentLoading, payment } = usePaymentPaid();
   const [ paymentDone, setPaymentDone] = useState('');
+  const [ typeSelector, setTypeSelector ] = useState(true);
+  const [ hotelSelector, setHotelSelector ] = useState(true);
+  const [ totalPrice, setTotalPrice ] = useState(0);
 
   try {
     useEffect(async() => {
@@ -32,7 +35,52 @@ export default function Payment() {
                 />
               </Choices>
               <h4>Pagamento</h4>
-            </> : 'payment.data.status'}
+            </> : <>
+              <h4>Primeiro, escolha sua modalidade de ingresso</h4>
+              <Choices>
+                <ChoiceBox
+                  description={'Presencial'}
+                  price={'R$'+500}
+                  selectState={typeSelector}
+                  selector={setTypeSelector}
+                  setPrice={setTotalPrice}
+                  totalPrice={totalPrice}
+                />
+                <ChoiceBox
+                  description={'Remoto'}
+                  price={'R$'+400}
+                  selectState={!typeSelector}
+                  selector={setTypeSelector}
+                  setPrice={setTotalPrice}
+                  totalPrice={totalPrice}
+                />
+              </Choices>
+              <SecondStep remote={!typeSelector}>
+                <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
+                <Choices>
+                  <ChoiceBox
+                    description={'Sem Hotel'}
+                    price={'+ R$'+0}
+                    selectState={hotelSelector}
+                    selector={setHotelSelector}
+                    setPrice={setTotalPrice}
+                    totalPrice={totalPrice}
+                  />
+                  <ChoiceBox
+                    description={'Com Hotel'}
+                    price={'+ R$'+400}
+                    selectState={!hotelSelector}
+                    selector={setHotelSelector}
+                    setPrice={setTotalPrice}
+                    totalPrice={totalPrice}
+                  />
+                </Choices>
+              </SecondStep>
+              <h4>
+                Fechado! O total ficou em <strong>{totalPrice}</strong>. Agora é só confirmar:
+              </h4>
+              <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+            </>}
           </>
         }
       </Wrapper>
@@ -45,18 +93,17 @@ export default function Payment() {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  font-family: 'Roboto';
+  font-weight: 400;
+  width: 100%;
 
   h1 {
-    font-family: 'Roboto';
-    font-weight: 400;
     font-size: 30px;
     line-height: 40px;
     color: #000000;
   }
 
   h4 {
-    font-family: 'Roboto';
-    font-weight: 400;
     font-size: 18px;
     line-height: 23px;
     color: #8e8e8e;
@@ -98,4 +145,14 @@ const ConfirmButton = styled.button`
 const StyledLoader = styled(Loader)`
   position: relative;
   top: -4.5px;
+`;
+
+const SecondStep = styled.div`
+  display: ${props => props.price === 0 || props.remote === true ? 'none' : 'flex'};
+  flex-direction: column;
+`;
+
+const ThirdStep = styled.div`
+  display: ${props => props.price === 0 ? 'none' : 'flex'};
+  flex-direction: column;
 `;
