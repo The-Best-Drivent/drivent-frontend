@@ -20,7 +20,7 @@ export default function ChoiceBox({
   return (
     <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{price}</p>
+      <p>{'R$ '+price}</p>
     </Wrapper>
   );
 }

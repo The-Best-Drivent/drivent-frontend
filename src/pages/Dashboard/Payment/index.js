@@ -35,6 +35,10 @@ export default function Payment() {
                 />
               </Choices>
               <h4>Pagamento</h4>
+              <>
+                <h3>Pagamento confirmado!</h3>
+                <h2>Prossiga para a escolha de hospedagem e atividades</h2>
+              </>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
@@ -101,6 +105,18 @@ const Wrapper = styled.div`
     font-size: 30px;
     line-height: 40px;
     color: #000000;
+  }
+
+  h2 {
+    margin-top: 6px;
+    font-size: 16px;
+    color: #A9A9A9;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4F4F4F;
   }
 
   h4 {
