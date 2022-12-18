@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
+import PaymentForm from '../../../components/Payment/CreditCard';
 
 export default function Payment() {
   const { paymentLoading, payment } = usePaymentPaid();
@@ -10,13 +11,13 @@ export default function Payment() {
   const [ typeSelector, setTypeSelector ] = useState(true);
   const [ hotelSelector, setHotelSelector ] = useState(true);
   const [ totalPrice, setTotalPrice ] = useState(0);
+  const [reserve, setReserve] = useState(false);
 
   try {
     useEffect(async() => {
       const result = await payment();
       setPaymentDone(result);
     }, []);
-   
     return (
       <Wrapper>
         <h1>Ingresso e Pagamento</h1>
@@ -39,7 +40,7 @@ export default function Payment() {
                 <h3>Pagamento confirmado!</h3>
                 <h2>Prossiga para a escolha de hospedagem e atividades</h2>
               </>
-            </> : <>
+            </> : reserve === false ? <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
                 <ChoiceBox
@@ -83,7 +84,18 @@ export default function Payment() {
               <h4>
                 Fechado! O total ficou em <strong>{totalPrice}</strong>. Agora é só confirmar:
               </h4>
-              <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+              <ConfirmButton onClick={() => setReserve(true)}>RESERVAR INGRESSO</ConfirmButton>
+            </> : <>
+              <Choices>
+                <ChoiceBox
+                  description={'Presencial'+' + Com Hotel'}
+                  price={400}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <h4>Pagamento</h4>
+              <PaymentForm />
             </>}
           </>
         }
