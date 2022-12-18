@@ -1,46 +1,26 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
 export default function ChoiceBox({
-  type,
   description,
   price,
-  setTicketChoice,
-  ticketChoice
+  selectState,
+  selector,
+  disable,
 }) {
-  const [selected, setSelected] = useState(false);
-
   function clickButton() {
-    setSelected(!selected);
-
-    if (!selected) {
-      if (type === 'remote') {
-        setTicketChoice({
-          remote: description === 'Online' ? true : false,
-          hotel: ticketChoice.hotel,
-          price: (ticketChoice.price += price),
-        });
+    if (!disable && !selectState && selector) {
+      if (description === 'Presencial' || description === 'Sem Hotel') {
+        selector(!selectState);
+      } else {
+        selector(selectState);
       }
-      if (type === 'hotel') {
-        setTicketChoice({
-          remote: ticketChoice.remote,
-          hotel: description === 'Com Hotel' ? true : false,
-          price: (ticketChoice.price += price),
-        });
-      }
-    } else {
-      setTicketChoice({
-        remote: ticketChoice.remote,
-        hotel: ticketChoice.hotel,
-        price: (ticketChoice.price -= price),
-      });
     }
   }
 
   return (
-    <Wrapper onClick={clickButton} selected={selected}>
+    <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{type === 'hotel' ? `+ R$ ${price}` : `R$ ${price}`}</p>
+      <p>{'R$ '+price}</p>
     </Wrapper>
   );
 }
@@ -50,13 +30,13 @@ const Wrapper = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: ${(props) => (props.selected ? 'none' : '1px solid #cecece')};
+  border: ${(props) => (props.selected && props.disable ? 'none' : '1px solid #cecece')};
   border-radius: 20px;
-  width: 145px;
+  width: ${(props) => (props.disable ? '285px' : '145px')};
   height: 145px;
   margin: 12px;
 
-  background-color: ${(props) => (props.selected ? '#FFEED2' : '#FFFFFF')};
+  background-color: ${(props) => (props.selected || props.disable ? '#FFEED2' : '#FFFFFF')};
 
   font-family: 'Roboto';
   font-weight: 400;
@@ -66,6 +46,7 @@ const Wrapper = styled.button`
   color: #454545;
 
   p:nth-child(2) {
+    margin-top: 8px;
     color: #898989;
   }
 `;
