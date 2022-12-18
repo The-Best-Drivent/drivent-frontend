@@ -13,7 +13,6 @@ export default function Hotel() {
     }
   }, [hotels]);
 
-  console.log('a===>', hotelsData);
   return (
     <Wrapper>
       <StyledTypography variant='h4'>Escolha de hotel e quarto</StyledTypography>
