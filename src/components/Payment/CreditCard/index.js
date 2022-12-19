@@ -2,92 +2,117 @@ import React, { useState } from 'react';
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import usePaymentReserved from '../../../hooks/api/useReserved';
 
-const CreditCard = () => {
+const CreditCard = ({ ticketId }) => {
   const [number, SetNumber] = useState('');
   const [name, SetName] = useState('');
   const [date, SetDate] = useState('');
   const [cvc, SetCvc] = useState('');
   const [focus, SetFocus] = useState('');
+  const { paymentLoading, pay } = usePaymentReserved();
+
+  async function sendPay() {
+    const body = {
+      ticketId,
+      cardData: {
+        issuer: 'string',
+        number: number,
+        name: name,
+        expirationDate: date,
+        cvc
+      }
+    };
+    try {
+      await pay(body);
+      toast('Pagamento Realizado com sucesso!');
+    } catch (error) {
+      toast('Não foi possível fazer o pagamento!');
+    }
+  }
 
   return (
-    <Container>
-      {/* <div className="rccs__card backcolor"> */}
+    <>
+      <Container>
+        {/* <div className="rccs__card backcolor"> */}
 
-      <div clasName="rccs__card rccs__card--unknown">
-        <Cards
-          number={number}
-          name={name}
-          expiry={date}
-          cvc={cvc}
-          focused={focus}
-        />
-      </div>
+        <div clasName="rccs__card rccs__card--unknown">
+          <Cards
+            number={number}
+            name={name}
+            expiry={date}
+            cvc={cvc}
+            focused={focus}
+          />
+        </div>
 
-      <br />
-      <form>
-        <div className="row">
-          <div className="col-sm-11">
-            <input
-              type="text"
-              className="form-control"
-              placeholder='Card Number'
-              value={number}
-              name="number"
-              onChange={(e) => {
-                SetNumber(e.target.value);
-              }}
-              onFocus={(e) => SetFocus(e.target.name)}
-            ></input>
-          </div>
-        </div>
         <br />
-        <div className="row">
-          <div className="col-sm-11">
-            <input
-              type="text"
-              className="form-control"
-              placeholder='Card Name'
-              value={name}
-              name="name"
-              onChange={(e) => {
-                SetName(e.target.value);
-              }}
-              onFocus={(e) => SetFocus(e.target.name)}
-            ></input>
+        <form>
+          <div className="row">
+            <div className="col-sm-11">
+              <input
+                type="text"
+                className="form-control"
+                placeholder='Card Number'
+                value={number}
+                name="number"
+                onChange={(e) => {
+                  SetNumber(e.target.value);
+                }}
+                onFocus={(e) => SetFocus(e.target.name)}
+              ></input>
+            </div>
           </div>
-        </div>
-        <br />
-        <div className="row">
-          <div className="col-sm-6">
-            <input
-              type="text"
-              name="expiry"
-              className="form-control"
-              placeholder='Expiration Date'
-              value={date}
-              onChange={(e) => {
-                SetDate(e.target.value);
-              }}
-              onFocus={(e) => SetFocus(e.target.name)}
-            ></input>
+          <br />
+          <div className="row">
+            <div className="col-sm-11">
+              <input
+                type="text"
+                className="form-control"
+                placeholder='Card Name'
+                value={name}
+                name="name"
+                onChange={(e) => {
+                  SetName(e.target.value);
+                }}
+                onFocus={(e) => SetFocus(e.target.name)}
+              ></input>
+            </div>
           </div>
-          <div className="col-sm-5">
-            <input
-              type="tel"
-              name="cvc"
-              className="card"
-              placeholder='CVV'
-              value={cvc}
-              onChange={(e) => {
-                SetCvc(e.target.value);
-              }}
-              onFocus={(e) => SetFocus(e.target.name)}
-            ></input>
+          <br />
+          <div className="row">
+            <div className="col-sm-6">
+              <input
+                type="text"
+                name="expiry"
+                className="form-control"
+                placeholder='Expiration Date'
+                value={date}
+                onChange={(e) => {
+                  SetDate(e.target.value);
+                }}
+                onFocus={(e) => SetFocus(e.target.name)}
+              ></input>
+            </div>
+            <div className="col-sm-5">
+              <input
+                type="tel"
+                name="cvc"
+                className="card"
+                placeholder='CVV'
+                value={cvc}
+                onChange={(e) => {
+                  SetCvc(e.target.value);
+                }}
+                onFocus={(e) => SetFocus(e.target.name)}
+              ></input>
+            </div>
           </div>
-        </div>
-      </form>
-    </Container>
+        </form>
+      </Container>
+      <ConfirmButton onClick={sendPay} type = {'pagamento'}>FINALIZAR PAGAMENTO</ConfirmButton>
+    </>
   );
 };
 export default CreditCard;
@@ -143,3 +168,20 @@ const Container = styled.div`
       }
     }
 `;
+const ConfirmButton = styled.button`
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
+
+  border: none;
+  width: 162px;
+  width: ${props => props.type === 'pagamento' ? '200px' : '162px'};
+  height: 37px;
+  background: #e0e0e0;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 4px;
+`;
+

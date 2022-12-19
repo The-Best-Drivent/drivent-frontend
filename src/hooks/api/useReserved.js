@@ -1,20 +1,20 @@
 import useAsync from '../useAsync';
 import useToken from '../useToken';
 
-import * as ticketApi from '../../services/ticketApi';
+import * as paymentApi from '../../services/paymentApi';
 
-export default function usePaymentPaid() {
+export default function usePaymentReserved() {
   const token = useToken();
+  
   const {
     loading: paymentLoading,
     error: paymentError,
-    act: payment
-  } =  useAsync(() => ticketApi.getTickets(token));
+    act: pay
+  } =  useAsync(() => paymentApi.pay(token));
 
   return {
     paymentLoading,
     paymentError,
-    payment,
+    pay,
   };
 }
-

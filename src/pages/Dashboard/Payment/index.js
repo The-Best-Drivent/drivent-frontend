@@ -12,6 +12,7 @@ export default function Payment() {
   const [ hotelSelector, setHotelSelector ] = useState(true);
   const [ totalPrice, setTotalPrice ] = useState(0);
   const [reserve, setReserve] = useState(false);
+  const ticketId = 1;
 
   try {
     useEffect(async() => {
@@ -88,15 +89,14 @@ export default function Payment() {
             </> : <>
               <Choices>
                 <ChoiceBox
-                  description={'Presencial'+' + Com Hotel'}
-                  price={400}
+                  description= {'Presencial'+' + Com Hotel'}
+                  price={500}
                   selectState={true}
                   disable={true}
                 />
               </Choices>
               <h4>Pagamento</h4>
-              <CreditCard />
-              <ConfirmButton type = {'pagamento'} >FINALIZAR PAGAMENTO</ConfirmButton>
+              <CreditCard ticketId = {ticketId}/>
             </>}
           </>
         }
