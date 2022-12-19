@@ -3,7 +3,7 @@ import Loader from 'react-loader-spinner';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
-import PaymentForm from '../../../components/Payment/CreditCard';
+import CreditCard from '../../../components/Payment/CreditCard';
 
 export default function Payment() {
   const { paymentLoading, payment } = usePaymentPaid();
@@ -95,7 +95,8 @@ export default function Payment() {
                 />
               </Choices>
               <h4>Pagamento</h4>
-              <PaymentForm />
+              <CreditCard />
+              <ConfirmButton type = {'pagamento'} >FINALIZAR PAGAMENTO</ConfirmButton>
             </>}
           </>
         }
@@ -164,6 +165,7 @@ const ConfirmButton = styled.button`
 
   border: none;
   width: 162px;
+  width: ${props => props.type === 'pagamento' ? '200px' : '162px'};
   height: 37px;
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
