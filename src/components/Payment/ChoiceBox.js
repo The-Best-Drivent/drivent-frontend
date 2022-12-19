@@ -17,14 +17,14 @@ export default function ChoiceBox({
         selector(selectState);
       }
 
-      setPrice(price.replace('R', '').replace(' ', '').replace('$', '').replace('+', ''));
+      setPrice(Number(price));
     }
   }
 
   return (
     <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{price}</p>
+      {description === 'Com Hotel' || description === 'Sem Hotel' ? <p>{'+ R$ '+price}</p> : <p>{'R$ '+price}</p>}
     </Wrapper>
   );
 }
@@ -34,7 +34,7 @@ const Wrapper = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: ${(props) => (props.selected && props.disable ? 'none' : '1px solid #cecece')};
+  border: ${(props) => (props.selected || props.disable ? 'none' : '1px solid #cecece')};
   border-radius: 20px;
   width: ${(props) => (props.disable ? '285px' : '145px')};
   height: 145px;

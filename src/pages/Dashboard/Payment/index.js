@@ -50,14 +50,14 @@ export default function Payment() {
               <Choices>
                 <ChoiceBox
                   description={'Presencial'}
-                  price={'R$'+500}
+                  price={250}
                   selectState={typeSelector === '' ? false : typeSelector}
                   selector={setTypeSelector}
                   setPrice={setTypePrice}
                 />
                 <ChoiceBox
                   description={'Remoto'}
-                  price={'R$'+400}
+                  price={400}
                   selectState={typeSelector === '' ? false : !typeSelector}
                   selector={setTypeSelector}
                   setPrice={setTypePrice}
@@ -68,14 +68,14 @@ export default function Payment() {
                 <Choices>
                   <ChoiceBox
                     description={'Sem Hotel'}
-                    price={'+ R$'+0}
+                    price={0}
                     selectState={hotelSelector === '' ? false : hotelSelector}
                     selector={setHotelSelector}
                     setPrice={setHotelPrice}
                   />
                   <ChoiceBox
                     description={'Com Hotel'}
-                    price={'+ R$'+400}
+                    price={350}
                     selectState={hotelSelector === '' ? false : !hotelSelector}
                     selector={setHotelSelector}
                     setPrice={setHotelPrice}
