@@ -6,6 +6,8 @@ export default function ChoiceBox({
   selectState,
   selector,
   disable,
+  setPrice,
+  totalPrice,
 }) {
   function clickButton() {
     if (!disable && !selectState && selector) {
@@ -14,6 +16,8 @@ export default function ChoiceBox({
       } else {
         selector(selectState);
       }
+
+      setPrice(Number(price));
     }
   }
 
