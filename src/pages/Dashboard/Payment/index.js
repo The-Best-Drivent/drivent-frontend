@@ -5,58 +5,62 @@ import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
 
 export default function Payment() {
-  const { paymentLoading, payment } = usePaymentPaid();
+  const { paymentLoading, payment, enrollmentLoading, getEnrollment } = usePaymentPaid();
+  const [ hasEnrollment, setHasEnrollment] = useState('');
   const [ paymentDone, setPaymentDone] = useState('');
-  const [ typeSelector, setTypeSelector ] = useState(true);
-  const [ hotelSelector, setHotelSelector ] = useState(true);
-  const [ totalPrice, setTotalPrice ] = useState(0);
-
+  const [ typeSelector, setTypeSelector ] = useState('');
+  const [ hotelSelector, setHotelSelector ] = useState('');
+  const [ typePrice, setTypePrice ] = useState(0);
+  const [ hotelPrice, setHotelPrice ] = useState(0);
+  
   try {
     useEffect(async() => {
-      const result = await payment();
+      let result = await getEnrollment();
+      setHasEnrollment(result);
+      result = await payment();
       setPaymentDone(result);
     }, []);
    
     return (
       <Wrapper>
         <h1>Ingresso e Pagamento</h1>
-        {paymentLoading ? <span>
-          {paymentLoading && <StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
-        </span> :
-          <>
-            {paymentDone !== '' ? <>
-              <h4>Ingresso escolhido</h4>
-              <Choices>
-                <ChoiceBox
-                  description={(paymentDone.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentDone.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
-                  price={Number(paymentDone.TicketType.price)}
-                  selectState={true}
-                  disable={true}
-                />
-              </Choices>
-              <h4>Pagamento</h4>
-              <>
-                <h3>Pagamento confirmado!</h3>
-                <h2>Prossiga para a escolha de hospedagem e atividades</h2>
-              </>
+        {paymentLoading || enrollmentLoading ? <span>
+          {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
+        </span> : hasEnrollment !== '' ? <>
+          {paymentDone !== '' && paymentDone.status === 'PAID' ? <>
+            <h4>Ingresso escolhido</h4>
+            <Choices>
+              <ChoiceBox
+                description={(paymentDone.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentDone.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
+                price={Number(paymentDone.TicketType.price)}
+                selectState={true}
+                disable={true}
+              />
+            </Choices>
+            <h4>Pagamento</h4>
+            <>
+              <h3>Pagamento confirmado!</h3>
+              <h2>Prossiga para a escolha de hospedagem e atividades</h2>
+            </>
+          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' ? 
+            <>
+              {'Em breve coloque sua forma de pagamento aqui'}
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
                 <ChoiceBox
                   description={'Presencial'}
                   price={'R$'+500}
-                  selectState={typeSelector}
+                  selectState={typeSelector === '' ? false : typeSelector}
                   selector={setTypeSelector}
-                  setPrice={setTotalPrice}
-                  totalPrice={totalPrice}
+                  setPrice={setTypePrice}
                 />
                 <ChoiceBox
                   description={'Remoto'}
                   price={'R$'+400}
-                  selectState={!typeSelector}
+                  selectState={typeSelector === '' ? false : !typeSelector}
                   selector={setTypeSelector}
-                  setPrice={setTotalPrice}
-                  totalPrice={totalPrice}
+                  setPrice={setTypePrice}
                 />
               </Choices>
               <SecondStep remote={!typeSelector}>
@@ -65,27 +69,29 @@ export default function Payment() {
                   <ChoiceBox
                     description={'Sem Hotel'}
                     price={'+ R$'+0}
-                    selectState={hotelSelector}
+                    selectState={hotelSelector === '' ? false : hotelSelector}
                     selector={setHotelSelector}
-                    setPrice={setTotalPrice}
-                    totalPrice={totalPrice}
+                    setPrice={setHotelPrice}
                   />
                   <ChoiceBox
                     description={'Com Hotel'}
                     price={'+ R$'+400}
-                    selectState={!hotelSelector}
+                    selectState={hotelSelector === '' ? false : !hotelSelector}
                     selector={setHotelSelector}
-                    setPrice={setTotalPrice}
-                    totalPrice={totalPrice}
+                    setPrice={setHotelPrice}
                   />
                 </Choices>
               </SecondStep>
-              <h4>
-                Fechado! O total ficou em <strong>{totalPrice}</strong>. Agora é só confirmar:
-              </h4>
-              <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+              <ThirdStep hide={(typeSelector === true && hotelSelector === '') || typeSelector === '' ? true : false}>
+                <h4>
+                  Fechado! O total ficou em <strong>{Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
+                </h4>
+                <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+              </ThirdStep>
             </>}
-          </>
+        </> : <span>
+          <h4>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</h4>
+        </span>
         }
       </Wrapper>
     );
@@ -127,13 +133,14 @@ const Wrapper = styled.div`
   }
 
   span {
-    margin-top: 30%;
+    margin-top: 25%;
     display: flex;
     justify-content: center;
   }
 
   span * {
-   
+    max-width: 400px;
+    text-align: center;
     margin-right: 8px;
   }
 `;
@@ -169,6 +176,6 @@ const SecondStep = styled.div`
 `;
 
 const ThirdStep = styled.div`
-  display: ${props => props.price === 0 ? 'none' : 'flex'};
+  display: ${props => props.hide ? 'none' : 'flex'};
   flex-direction: column;
 `;

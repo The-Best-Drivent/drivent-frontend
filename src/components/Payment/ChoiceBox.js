@@ -6,6 +6,8 @@ export default function ChoiceBox({
   selectState,
   selector,
   disable,
+  setPrice,
+  totalPrice,
 }) {
   function clickButton() {
     if (!disable && !selectState && selector) {
@@ -14,13 +16,15 @@ export default function ChoiceBox({
       } else {
         selector(selectState);
       }
+
+      setPrice(price.replace('R', '').replace(' ', '').replace('$', '').replace('+', ''));
     }
   }
 
   return (
     <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{'R$ '+price}</p>
+      <p>{price}</p>
     </Wrapper>
   );
 }
