@@ -10,7 +10,6 @@ export default function Hotel() {
   const { bookings, bookingLoading } = useBooking();
   const [ hotelsData, setHotelsData ] = useState([]);
   const [ bookingData, setBookingData ] = useState({});
-  const [ bookingHotelData, setBookingHotelData ] = useState({});
 
   useEffect(() => {
     if(hotels) {
@@ -21,47 +20,43 @@ export default function Hotel() {
   useEffect(() => {
     if(bookings) {
       setBookingData(bookings);
+      console.log(bookings);
     }
   }, [bookings]);
-
-  useEffect(() => {
-    if(bookings && hotels) {
-      setBookingHotelData(hotelsData.find(hotel => hotel.id = bookingData.Room.hotelId));
-      console.log(bookingHotelData);
-    }
-  }, [hotels, bookings]);
 
   return (
     <Wrapper>
       <StyledTypography variant='h4'>Escolha de hotel e quarto</StyledTypography>
       {hotelsLoading || bookingLoading ? <span>
         {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
-      </span> : bookingData !== {} && hotelsData !== [] && bookingHotelData !== {} ? <>
+      </span> : bookingData !== {} && hotelsData !== [] ? <>
         <h3>Você já escolheu seu quarto:</h3>
       
         <HotelsWrapper>
-          {bookingHotelData !== {} ? 
-            <HotelButton key={bookingHotelData.name}>
-              <HotelImg src={bookingHotelData.image} alt={bookingHotelData.name}/>
-              <h1>{bookingHotelData.name}</h1>
+          <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
+            <HotelImg src={bookingData.booking.Room.Hotel.image} alt={bookingData.booking.Room.Hotel.name}/>
+            <h1>{bookingData.booking.Room.Hotel.name}</h1>
 
-              <h2>{bookingData.name}</h2>
-            </HotelButton> : <></>
-          }
+            <h4>{'Quarto Reservado'}</h4>
+            <h2>{bookingData.booking.Room.name + (bookingData.booking.Room.capacity === 1 ? ' (Single)' : ' (Double)')}</h2>
+
+            <h4>{'Pessoas no seu quarto'}</h4>
+            <h2>{bookingData._count === 1 ? 'Somente você' : 'Você e mais ' + bookingData._count}</h2>
+          </HotelButton>
         </HotelsWrapper>
+        <ConfirmButton onClick={() => console.log('aqui')}>TROCAR DE QUARTO</ConfirmButton>
       </> : <>
         <StyledTypography variant='h6'>Primeiro, escolha seu hotel</StyledTypography>
         
         <HotelsWrapper>
-          {
-            hotelsData.map( (hotel) => {
-              return (
-                <HotelButton key={hotel.name}>
-                  <HotelImg src={hotel.image} alt={hotel.name}/>
-                  <h1>{hotel.name}</h1>
-                </HotelButton>
-              );
-            })}
+          {hotelsData.map( (hotel) => {
+            return (
+              <HotelButton key={hotel.name}>
+                <HotelImg src={hotel.image} alt={hotel.name}/>
+                <h1>{hotel.name}</h1>
+              </HotelButton>
+            );
+          })}
         </HotelsWrapper>
       </>}
     </Wrapper>
@@ -84,7 +79,7 @@ const Wrapper = styled.div`
   }
 
   h2 {
-    font-size: 8px;
+    font-size: 12px;
     color: #8e8e8e;
     margin: 16px 0;
   }
@@ -110,22 +105,35 @@ const HotelsWrapper = styled.div`
 const HotelButton = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   box-sizing: border-box;
   padding:10px;
-  background-color: ${props => props.booking ? '#EBEBEB' : '#EBEBEB'};
+  background-color: ${props => props.booking ? '#FFEED2' : '#EBEBEB'};
   width:200px;
   height:300px;
   margin-right:20px;
   border-radius: 12px;
+  
+  h4,
   h1{
     width: 100%;
     font-size: 20px;
   }
+
+  h4 {
+    font-size: 12px;
+    font-weight: 12px;
+    margin-top: 18px;
+  }
+
+  h2 {
+    margin: 6px 0;
+  }
+  
   &:hover{
     cursor: pointer;
     opacity: 0.9;
   }
+  
   &:active{
     transform: translateY(4px);
   }
@@ -146,4 +154,20 @@ const StyledTypography = styled(Typography)`
 const StyledLoader = styled(Loader)`
   position: relative;
   top: -4.5px;
+`;
+
+const ConfirmButton = styled.button`
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
+  margin-top: 48px;
+  border: none;
+  width: 162px;
+  height: 37px;
+  background: #e0e0e0;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 4px;
 `;
