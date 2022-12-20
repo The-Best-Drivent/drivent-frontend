@@ -14,26 +14,20 @@ const CreditCard = ({ ticketId }) => {
   const [cvc, SetCvc] = useState('');
   const [focus, SetFocus] = useState('');
   const { pay } = usePaymentReserved();
-  const token = useToken();
-    
+
   async function sendPay() {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
+    const body = {
+      ticketId: ticketId,
+      cardData: {
+        issuer: 'visa',
+        number: number,
+        name: name,
+        expirationDate: date,
+        cvc: cvc
       }
     };
-
     try {
-      const response = await axios.post('http://localhost:5433/payments/process', {
-        ticketId: ticketId,
-        cardData: {
-          issuer: 'visa',
-          number: number,
-          name: name,
-          expirationDate: date,
-          cvc
-        }
-      }, config);
+      const response = await pay(body);
       console.log(response);
       toast('Pagamento Realizado com sucesso!');
     } catch (error) {

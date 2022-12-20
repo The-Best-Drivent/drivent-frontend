@@ -14,8 +14,7 @@ export default function Payment() {
   const [ typePrice, setTypePrice ] = useState(0);
   const [ hotelPrice, setHotelPrice ] = useState(0);
   const [reserve, setReserve] = useState(false);
-  const ticketId = 3;
-  
+
   try {
     useEffect(async() => {
       let result = await getEnrollment();
