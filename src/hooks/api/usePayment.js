@@ -8,9 +8,10 @@ export default function usePaymentPaid() {
   const token = useToken();
   
   const {
+    data: payment,
     loading: paymentLoading,
     error: paymentError,
-    act: payment
+    act: getPayment,
   } =  useAsync(() => ticketApi.getTickets(token));
 
   const {

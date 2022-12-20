@@ -5,34 +5,56 @@ import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
 
 export default function Payment() {
-  const { paymentLoading, payment, enrollmentLoading, getEnrollment } = usePaymentPaid();
-  const [ hasEnrollment, setHasEnrollment] = useState('');
-  const [ paymentDone, setPaymentDone] = useState('');
+  const { paymentLoading, payment, enrollmentLoading, enrollment } = usePaymentPaid();
+  const [ enrollmentData, setEnrollmentData] = useState('');
+  const [ paymentData, setPaymentData] = useState('');
   const [ typeSelector, setTypeSelector ] = useState('');
   const [ hotelSelector, setHotelSelector ] = useState('');
   const [ typePrice, setTypePrice ] = useState(0);
   const [ hotelPrice, setHotelPrice ] = useState(0);
+  const [ ticket, setTicket ] = useState({
+    isRemote: false,
+    includesHotel: false,
+    price: 0,
+  });
   
   try {
-    useEffect(async() => {
-      let result = await getEnrollment();
-      setHasEnrollment(result);
-      result = await payment();
-      setPaymentDone(result);
-    }, []);
+    useEffect(() => {
+      if(payment) {
+        setPaymentData(payment);
+      }
+    }, [payment]);
+
+    useEffect(() => {
+      if(enrollment) {
+        setEnrollmentData(enrollment);
+      }
+    }, [enrollment]); 
+    
+    useEffect(() => {
+      console.log(ticket);
+    }, [ticket]); 
+
+    function submitTicket() {
+      setTicket({
+        isRemote: !typeSelector,
+        includesHotel: hotelSelector === '' || !typeSelector === true ? false : !hotelSelector,
+        price: typePrice === 100 ? Number(typePrice) : Number(typePrice) + Number(hotelPrice),
+      });
+    }
    
     return (
       <Wrapper>
         <h1>Ingresso e Pagamento</h1>
         {paymentLoading || enrollmentLoading ? <span>
           {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
-        </span> : hasEnrollment !== '' ? <>
-          {paymentDone !== '' && paymentDone.status === 'PAID' ? <>
+        </span> : enrollmentData !== '' ? <>
+          {paymentData !== '' && paymentData.status === 'PAID' ? <>
             <h4>Ingresso escolhido</h4>
             <Choices>
               <ChoiceBox
-                description={(paymentDone.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentDone.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
-                price={Number(paymentDone.TicketType.price)}
+                description={(paymentData.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentData.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
+                price={Number(paymentData.TicketType.price)}
                 selectState={true}
                 disable={true}
               />
@@ -42,7 +64,7 @@ export default function Payment() {
               <h3>Pagamento confirmado!</h3>
               <h2>Prossiga para a escolha de hospedagem e atividades</h2>
             </>
-          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' ? 
+          </> : paymentData !== '' && paymentData.status === 'RESERVED' ? 
             <>
               {'Em breve coloque sua forma de pagamento aqui'}
             </> : <>
@@ -57,7 +79,7 @@ export default function Payment() {
                 />
                 <ChoiceBox
                   description={'Remoto'}
-                  price={400}
+                  price={100}
                   selectState={typeSelector === '' ? false : !typeSelector}
                   selector={setTypeSelector}
                   setPrice={setTypePrice}
@@ -84,9 +106,9 @@ export default function Payment() {
               </SecondStep>
               <ThirdStep hide={(typeSelector === true && hotelSelector === '') || typeSelector === '' ? true : false}>
                 <h4>
-                  Fechado! O total ficou em <strong>{Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
+                  Fechado! O total ficou em <strong>{!typeSelector ? Number(typePrice) : Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
                 </h4>
-                <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+                <ConfirmButton onClick={() => submitTicket()}>RESERVAR INGRESSO</ConfirmButton>
               </ThirdStep>
             </>}
         </> : <span>
