@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import useHotel from '../../../hooks/api/useHotel';
 import useBooking from '../../../hooks/api/useBooking';
 import Loader from 'react-loader-spinner';
+import HotelCard from './HotelCard';
 
 export default function Hotel() {
   const { hotels, hotelsLoading } = useHotel();

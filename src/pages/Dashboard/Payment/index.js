@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
+import CreditCard from '../../../components/Payment/CreditCard';
 
 export default function Payment() {
   const { paymentLoading, payment, enrollmentLoading, enrollment } = usePaymentPaid();
@@ -17,6 +18,8 @@ export default function Payment() {
     includesHotel: false,
     price: 0,
   });
+  const [reserve, setReserve] = useState(false);
+  const ticketId = 3;
   
   try {
     useEffect(() => {
@@ -66,7 +69,15 @@ export default function Payment() {
             </>
           </> : paymentData !== '' && paymentData.status === 'RESERVED' ? 
             <>
-              {'Em breve coloque sua forma de pagamento aqui'}
+              <Choices>
+                <ChoiceBox
+                  description= {'Presencial'+' + Com Hotel'}
+                  price={500}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <CreditCard ticketId = {ticketId}/>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
