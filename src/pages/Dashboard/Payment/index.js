@@ -12,7 +12,7 @@ export default function Payment() {
   const [ hotelSelector, setHotelSelector ] = useState(true);
   const [ totalPrice, setTotalPrice ] = useState(0);
   const [reserve, setReserve] = useState(false);
-  const ticketId = 1;
+  const ticketId = 3;
 
   try {
     useEffect(async() => {
