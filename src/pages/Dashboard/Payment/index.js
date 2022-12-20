@@ -57,7 +57,7 @@ export default function Payment() {
                 />
                 <ChoiceBox
                   description={'Remoto'}
-                  price={400}
+                  price={100}
                   selectState={typeSelector === '' ? false : !typeSelector}
                   selector={setTypeSelector}
                   setPrice={setTypePrice}
@@ -84,7 +84,7 @@ export default function Payment() {
               </SecondStep>
               <ThirdStep hide={(typeSelector === true && hotelSelector === '') || typeSelector === '' ? true : false}>
                 <h4>
-                  Fechado! O total ficou em <strong>{Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
+                  Fechado! O total ficou em <strong>R$ {typePrice === 100 ? Number(typePrice) : Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
                 </h4>
                 <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
               </ThirdStep>
