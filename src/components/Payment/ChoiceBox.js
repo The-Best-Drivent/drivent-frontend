@@ -6,6 +6,8 @@ export default function ChoiceBox({
   selectState,
   selector,
   disable,
+  setPrice,
+  totalPrice,
 }) {
   function clickButton() {
     if (!disable && !selectState && selector) {
@@ -14,13 +16,15 @@ export default function ChoiceBox({
       } else {
         selector(selectState);
       }
+
+      setPrice(Number(price));
     }
   }
 
   return (
     <Wrapper onClick={clickButton} selected={selectState} disable={disable}>
       <p>{description}</p>
-      <p>{'R$ '+price}</p>
+      {description === 'Com Hotel' || description === 'Sem Hotel' ? <p>{'+ R$ '+price}</p> : <p>{'R$ '+price}</p>}
     </Wrapper>
   );
 }
@@ -30,7 +34,7 @@ const Wrapper = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: ${(props) => (props.selected && props.disable ? 'none' : '1px solid #cecece')};
+  border: ${(props) => (props.selected || props.disable ? 'none' : '1px solid #cecece')};
   border-radius: 20px;
   width: ${(props) => (props.disable ? '285px' : '145px')};
   height: 145px;
