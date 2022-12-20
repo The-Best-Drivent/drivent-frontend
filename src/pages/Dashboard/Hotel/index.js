@@ -13,6 +13,7 @@ export default function Hotel() {
   const [ bookingData, setBookingData ] = useState({});
 
   useEffect(() => {
+    console.log(hotels);
     if(hotels) {
       setHotelsData(hotels);
     }
@@ -21,7 +22,6 @@ export default function Hotel() {
   useEffect(() => {
     if(bookings) {
       setBookingData(bookings);
-      console.log(bookings);
     }
   }, [bookings]);
 
@@ -30,7 +30,7 @@ export default function Hotel() {
       <StyledTypography variant='h4'>Escolha de hotel e quarto</StyledTypography>
       {hotelsLoading || bookingLoading ? <span>
         {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
-      </span> : bookingData !== {} && hotelsData !== [] ? <>
+      </span> : bookingData.booking && hotelsData !== [] ? <>
         <h3>Você já escolheu seu quarto:</h3>
       
         <HotelsWrapper>

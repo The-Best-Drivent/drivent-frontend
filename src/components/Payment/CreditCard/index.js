@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Cards from 'react-credit-cards';
-import 'react-credit-cards/es/styles-compiled.css';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import usePaymentReserved from '../../../hooks/api/useReserved';
@@ -38,13 +36,6 @@ const CreditCard = ({ ticketId }) => {
         {/* <div className="rccs__card backcolor"> */}
 
         <div clasName="rccs__card rccs__card--unknown">
-          <Cards
-            number={number}
-            name={name}
-            expiry={date}
-            cvc={cvc}
-            focused={focus}
-          />
         </div>
 
         <br />
