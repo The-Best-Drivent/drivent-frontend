@@ -45,9 +45,17 @@ export default function Payment() {
               <h3>Pagamento confirmado!</h3>
               <h2>Prossiga para a escolha de hospedagem e atividades</h2>
             </>
-          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' ? 
+          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' || reserve ? 
             <>
-              {'Em breve coloque sua forma de pagamento aqui'}
+              <Choices>
+                <ChoiceBox
+                  description= {'Presencial'+' + Com Hotel'}
+                  price={500}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <CreditCard ticketId = {ticketId}/>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
@@ -89,7 +97,7 @@ export default function Payment() {
                 <h4>
                   Fechado! O total ficou em <strong>R$ {typePrice === 100 ? Number(typePrice) : Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
                 </h4>
-                <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+                <ConfirmButton onClick={() => setReserve(true)}>RESERVAR INGRESSO</ConfirmButton>
               </ThirdStep>
             </>}
         </> : <span>
