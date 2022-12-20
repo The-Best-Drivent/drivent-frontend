@@ -6,7 +6,6 @@ import * as enrollmentApi from '../../services/enrollmentApi';
 
 export default function usePaymentPaid() {
   const token = useToken();
-  
   const {
     loading: paymentLoading,
     error: paymentError,
@@ -30,3 +29,4 @@ export default function usePaymentPaid() {
     getEnrollment,
   };
 }
+

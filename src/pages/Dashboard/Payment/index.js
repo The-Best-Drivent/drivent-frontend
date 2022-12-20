@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import { useEffect, useState } from 'react';
 import ChoiceBox from '../../../components/Payment/ChoiceBox';
+import CreditCard from '../../../components/Payment/CreditCard';
 
 export default function Payment() {
   const { paymentLoading, payment, enrollmentLoading, getEnrollment } = usePaymentPaid();
@@ -12,6 +13,8 @@ export default function Payment() {
   const [ hotelSelector, setHotelSelector ] = useState('');
   const [ typePrice, setTypePrice ] = useState(0);
   const [ hotelPrice, setHotelPrice ] = useState(0);
+  const [reserve, setReserve] = useState(false);
+  const ticketId = 3;
   
   try {
     useEffect(async() => {
@@ -42,9 +45,17 @@ export default function Payment() {
               <h3>Pagamento confirmado!</h3>
               <h2>Prossiga para a escolha de hospedagem e atividades</h2>
             </>
-          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' ? 
+          </> : paymentDone !== '' && paymentDone.status === 'RESERVED' || reserve ? 
             <>
-              {'Em breve coloque sua forma de pagamento aqui'}
+              <Choices>
+                <ChoiceBox
+                  description= {'Presencial'+' + Com Hotel'}
+                  price={500}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <CreditCard ticketId = {ticketId}/>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
@@ -86,7 +97,7 @@ export default function Payment() {
                 <h4>
                   Fechado! O total ficou em <strong>R$ {typePrice === 100 ? Number(typePrice) : Number(typePrice)+Number(hotelPrice)}</strong>. Agora é só confirmar:
                 </h4>
-                <ConfirmButton>RESERVAR INGRESSO</ConfirmButton>
+                <ConfirmButton onClick={() => setReserve(true)}>RESERVAR INGRESSO</ConfirmButton>
               </ThirdStep>
             </>}
         </> : <span>
