@@ -4,7 +4,7 @@ export default function HotelCard({ hotel }) {
   const roomTypesString = stringMaker(hotel.Rooms);
   let capacity = capacityCounter(hotel.Rooms);
   return(
-    <HotelButton>
+    <HotelCardWrapper>
       <HotelImg src={hotel.image} alt={hotel.name}/>
       <h1>{hotel.name}</h1>
 
@@ -13,7 +13,7 @@ export default function HotelCard({ hotel }) {
       
       <h2>Vagas disponíveis:</h2>
       <p>{capacity}</p>
-    </HotelButton>
+    </HotelCardWrapper>
   );
 }
 
@@ -69,7 +69,7 @@ function stringMaker(rooms) {
   }
 }
 
-const HotelButton = styled.div`
+const HotelCardWrapper  = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

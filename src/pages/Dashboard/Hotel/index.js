@@ -52,10 +52,7 @@ export default function Hotel() {
         <HotelsWrapper>
           {hotelsData.map( (hotel) => {
             return (
-              <HotelButton key={hotel.name}>
-                <HotelImg src={hotel.image} alt={hotel.name}/>
-                <h1>{hotel.name}</h1>
-              </HotelButton>
+              <HotelCard hotel={hotel} key={hotel.id} />
             );
           })}
         </HotelsWrapper>
@@ -71,6 +68,25 @@ const Wrapper = styled.div`
     color: #8E8E8E;
     font-weight: 400;
   }
+`;
+
+const HotelsWrapper = styled.div`
+  display: flex;
+  font-family: 'Roboto';
+`;
+
+const HotelButton = styled.div`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding:10px;
+  background-color: ${props => props.booking ? '#FFEED2' : '#EBEBEB'};
+  width:200px;
+  height:300px;
+  margin-right:20px;
+  border-radius: 12px;
+
+  
 
   h3 {
     font-size: 18px;
@@ -96,23 +112,6 @@ const Wrapper = styled.div`
     text-align: center;
     margin-right: 8px;
   }
-`;
-
-const HotelsWrapper = styled.div`
-  display: flex;
-  font-family: 'Roboto';
-`;
-
-const HotelButton = styled.div`
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding:10px;
-  background-color: ${props => props.booking ? '#FFEED2' : '#EBEBEB'};
-  width:200px;
-  height:300px;
-  margin-right:20px;
-  border-radius: 12px;
   
   h4,
   h1{
