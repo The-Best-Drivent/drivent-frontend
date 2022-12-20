@@ -7,7 +7,6 @@ export default function ChoiceBox({
   selector,
   disable,
   setPrice,
-  totalPrice,
 }) {
   function clickButton() {
     if (!disable && !selectState && selector) {
