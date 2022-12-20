@@ -4,6 +4,8 @@ import 'react-credit-cards/es/styles-compiled.css';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import usePaymentReserved from '../../../hooks/api/useReserved';
+import axios from 'axios';
+import useToken from '../../../hooks/useToken';
 
 const CreditCard = ({ ticketId }) => {
   const [number, SetNumber] = useState('');
@@ -12,20 +14,27 @@ const CreditCard = ({ ticketId }) => {
   const [cvc, SetCvc] = useState('');
   const [focus, SetFocus] = useState('');
   const { pay } = usePaymentReserved();
+  const token = useToken();
     
   async function sendPay() {
-    const body = {
-      ticketId: ticketId,
-      cardData: {
-        issuer: 'visa',
-        number: number,
-        name: name,
-        expirationDate: date,
-        cvc
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
     };
+
     try {
-      await pay(body);
+      const response = await axios.post('http://localhost:5433/payments/process', {
+        ticketId: ticketId,
+        cardData: {
+          issuer: 'visa',
+          number: number,
+          name: name,
+          expirationDate: date,
+          cvc
+        }
+      }, config);
+      console.log(response);
       toast('Pagamento Realizado com sucesso!');
     } catch (error) {
       toast('Não foi possível fazer o pagamento!');

@@ -55,7 +55,7 @@ export default function Payment() {
                   disable={true}
                 />
               </Choices>
-              <CreditCard ticketId = {paymentDone.TicketType.id}/>
+              <CreditCard ticketId = {paymentDone.id}/>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
