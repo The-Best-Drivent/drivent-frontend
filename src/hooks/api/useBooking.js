@@ -10,7 +10,7 @@ export default function useBooking() {
     data: bookings,
     loading: bookingLoading,
     error: bookingError,
-  } =  useAsync(() => bookingApi.getBooking(token));
+  } =  useAsync(() => bookingApi.getBookingWithHotel(token));
 
   return {
     bookingLoading,
