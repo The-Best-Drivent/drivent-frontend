@@ -12,10 +12,10 @@ const CreditCard = ({ ticketId }) => {
   const [cvc, SetCvc] = useState('');
   const [focus, SetFocus] = useState('');
   const { pay } = usePaymentReserved();
-
+    
   async function sendPay() {
     const body = {
-      ticketId,
+      ticketId: ticketId,
       cardData: {
         issuer: 'visa',
         number: number,

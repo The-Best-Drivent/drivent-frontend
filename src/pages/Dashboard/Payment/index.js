@@ -49,13 +49,13 @@ export default function Payment() {
             <>
               <Choices>
                 <ChoiceBox
-                  description= {'Presencial'+' + Com Hotel'}
-                  price={500}
+                  description={(paymentDone.TicketType.isRemote ? 'Remoto' : 'Presencial')+(paymentDone.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')}
+                  price={Number(paymentDone.TicketType.price)}
                   selectState={true}
                   disable={true}
                 />
               </Choices>
-              <CreditCard ticketId = {ticketId}/>
+              <CreditCard ticketId = {paymentDone.TicketType.id}/>
             </> : <>
               <h4>Primeiro, escolha sua modalidade de ingresso</h4>
               <Choices>
