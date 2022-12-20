@@ -1,22 +1,37 @@
 import styled from 'styled-components';
 
 export default function HotelCard({ hotel }) {
-  const roomTypesString = stringMaker(hotel);
-
+  const roomTypesString = stringMaker(hotel.Rooms);
+  let capacity = capacityCounter(hotel.Rooms);
   return(
     <HotelButton>
       <HotelImg src={hotel.image} alt={hotel.name}/>
       <h1>{hotel.name}</h1>
+
       <h2>Tipos de acomodação:</h2>
       <p>{roomTypesString}</p>
+      
+      <h2>Vagas disponíveis:</h2>
+      <p>{capacity}</p>
     </HotelButton>
   );
 }
 
-function stringMaker(hotel) {
+function capacityCounter(rooms) {
+  let count = 0;
+  let bookingCount = 0;
+  rooms.forEach((room) => {
+    bookingCount += room.Booking.length;
+    count += room.capacity;
+  });
+
+  return count-bookingCount;
+}
+
+function stringMaker(rooms) {
   const roomTypes = { single: false, double: false, triple: false };
 
-  hotel.Rooms.forEach((room) => {
+  rooms.forEach((room) => {
     if(room.capacity===1) {
       roomTypes.single=true;
     }
@@ -70,6 +85,7 @@ const HotelButton = styled.div`
     width: 100%;
     font-size: 20px;
     margin-bottom: 20px;
+    font-weight: bold;
     color:#343434;
   }
 
@@ -85,7 +101,7 @@ const HotelButton = styled.div`
     width: 100%;
     font-size: 15px;
     color: #3C3C3C;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   &:hover{
@@ -99,7 +115,7 @@ const HotelButton = styled.div`
 
 const HotelImg = styled.img`
   width:100%;
-  height:100px;
+  height:120px;
   object-fit: cover;
   border-radius: 12px;
   margin-bottom:10px;
