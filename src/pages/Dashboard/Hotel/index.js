@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import useHotel from '../../../hooks/api/useHotel';
 import useBooking from '../../../hooks/api/useBooking';
 import Loader from 'react-loader-spinner';
+import HotelCard from './HotelCard';
 
 export default function Hotel() {
   const { hotels, hotelsLoading } = useHotel();
@@ -39,11 +40,13 @@ export default function Hotel() {
       </span> : bookingData !== {} && hotelsData !== [] && bookingHotelData !== {} ? <>
         <h3>Você já escolheu seu quarto:</h3>
       
-        <HotelsWrapper>
-          {bookingHotelData !== {} ? 
-            <HotelButton key={bookingHotelData.name}>
-              <HotelImg src={bookingHotelData.image} alt={bookingHotelData.name}/>
-              <h1>{bookingHotelData.name}</h1>
+      <HotelsWrapper>
+        {hotelsData.map( (hotel) => {
+          return (
+            <HotelCard hotel={hotel} key={hotel.id}/>
+          );
+        })}
+      </HotelsWrapper>
 
               <h2>{bookingData.name}</h2>
             </HotelButton> : <></>
