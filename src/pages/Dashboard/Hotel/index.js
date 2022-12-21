@@ -53,7 +53,8 @@ export default function Hotel() {
       {hotelsLoading || bookingLoading ? <span>
         {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
       </span> : bookingData.booking && hotelsData !== [] ? <>
-        <h3>Você já escolheu seu quarto:</h3>
+        
+        <StyledTypography variant='h6'>Você já escolheu seu quarto:</StyledTypography>
       
         <HotelsWrapper>
           <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
