@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import useHotel from '../../../hooks/api/useHotel';
 import useBooking from '../../../hooks/api/useBooking';
 import Loader from 'react-loader-spinner';
 import HotelCard from './HotelCard';
+import RoomCard from './RoomCard';
+import useToken from '../../../hooks/useToken';
+import * as bookingApi from '../../../services/bookingApi';
 
 export default function Hotel() {
+  const token = useToken();
   const { hotels, hotelsLoading } = useHotel();
   const { bookings, bookingLoading } = useBooking();
   const [ hotelsData, setHotelsData ] = useState([]);
+  const [ selectedHotel, setSelectedHotel] = useState({});
+  const [ selectedRoom, setSelectedRoom] = useState({});
   const [ bookingData, setBookingData ] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(hotels);
@@ -25,13 +34,27 @@ export default function Hotel() {
     }
   }, [bookings]);
 
+  async function createBooking() {
+    const body = { roomId: selectedRoom.id };
+    try{
+      const booking = await bookingApi.postBooking({ token, body });
+      setBookingData(booking);
+      toast('Quarto reservado com sucesso!');
+      navigate('/dashboard/activities');
+    } catch(err) {
+      console.log(err);
+      toast('Não foi possível reservar o quarto!');
+    }
+  }
+
   return (
     <Wrapper>
       <StyledTypography variant='h4'>Escolha de hotel e quarto</StyledTypography>
       {hotelsLoading || bookingLoading ? <span>
         {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
       </span> : bookingData.booking && hotelsData !== [] ? <>
-        <h3>Você já escolheu seu quarto:</h3>
+        
+        <StyledTypography variant='h6'>Você já escolheu seu quarto:</StyledTypography>
       
         <HotelsWrapper>
           <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
@@ -52,13 +75,29 @@ export default function Hotel() {
         <HotelsWrapper>
           {hotelsData.map( (hotel) => {
             return (
-              <HotelButton key={hotel.name}>
-                <HotelImg src={hotel.image} alt={hotel.name}/>
-                <h1>{hotel.name}</h1>
-              </HotelButton>
+              <HotelCard setSelectedHotel={setSelectedHotel} selectedId={selectedHotel.id} hotel={hotel} key={hotel.id} />
             );
           })}
         </HotelsWrapper>
+        {
+          selectedHotel.id?
+            <>
+              <StyledTypography variant='h6'>Ótima pedida! Agora escolha seu quarto:</StyledTypography>
+              <RoomsWrapper>
+                {selectedHotel.Rooms.map((room) => {
+                  return(<RoomCard room={room} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} key={room.id}/>);
+                })}
+              </RoomsWrapper>
+            </>
+            :
+            <></>
+        }
+        {
+          selectedRoom.id?
+            <ConfirmButton onClick={() => createBooking()}>RESERVAR QUARTO</ConfirmButton>
+            :
+            <></>
+        }
       </>}
     </Wrapper>
   );
@@ -71,6 +110,34 @@ const Wrapper = styled.div`
     color: #8E8E8E;
     font-weight: 400;
   }
+`;
+
+const RoomsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  &>*{
+    margin-right:20px;
+  }
+`;
+
+const HotelsWrapper = styled.div`
+  display: flex;
+  font-family: 'Roboto';
+  margin-bottom:10px;
+`;
+
+const HotelButton = styled.div`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding:10px;
+  background-color: ${props => props.booking ? '#FFEED2' : '#EBEBEB'};
+  width:200px;
+  height:300px;
+  margin-right:20px;
+  border-radius: 12px;
+
+  
 
   h3 {
     font-size: 18px;
@@ -96,23 +163,6 @@ const Wrapper = styled.div`
     text-align: center;
     margin-right: 8px;
   }
-`;
-
-const HotelsWrapper = styled.div`
-  display: flex;
-  font-family: 'Roboto';
-`;
-
-const HotelButton = styled.div`
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding:10px;
-  background-color: ${props => props.booking ? '#FFEED2' : '#EBEBEB'};
-  width:200px;
-  height:300px;
-  margin-right:20px;
-  border-radius: 12px;
   
   h4,
   h1{
@@ -164,11 +214,19 @@ const ConfirmButton = styled.button`
   line-height: 16px;
   text-align: center;
   color: #000000;
-  margin-top: 48px;
+  margin-top: 20px;
   border: none;
   width: 162px;
   height: 37px;
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 4px;
+  &:hover{
+    cursor: pointer;
+    opacity: 0.9;
+  }
+  
+  &:active{
+    transform: translateY(4px);
+  }
 `;
