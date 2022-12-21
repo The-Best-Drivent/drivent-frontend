@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import useHotel from '../../../hooks/api/useHotel';
 import useBooking from '../../../hooks/api/useBooking';
 import Loader from 'react-loader-spinner';
 import HotelCard from './HotelCard';
+import RoomCard from './RoomCard';
+import useToken from '../../../hooks/useToken';
+import * as bookingApi from '../../../services/bookingApi';
 
 export default function Hotel() {
+  const token = useToken();
   const { hotels, hotelsLoading } = useHotel();
   const { bookings, bookingLoading } = useBooking();
   const [ hotelsData, setHotelsData ] = useState([]);
+  const [ selectedHotel, setSelectedHotel] = useState({});
+  const [ selectedRoom, setSelectedRoom] = useState({});
   const [ bookingData, setBookingData ] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(hotels);
@@ -24,6 +33,19 @@ export default function Hotel() {
       setBookingData(bookings);
     }
   }, [bookings]);
+
+  async function createBooking() {
+    const body = { roomId: selectedRoom.id };
+    try{
+      const booking = await bookingApi.postBooking({ token, body });
+      setBookingData(booking);
+      toast('Quarto reservado com sucesso!');
+      navigate('/dashboard/activities');
+    } catch(err) {
+      console.log(err);
+      toast('Não foi possível reservar o quarto!');
+    }
+  }
 
   return (
     <Wrapper>
@@ -52,10 +74,29 @@ export default function Hotel() {
         <HotelsWrapper>
           {hotelsData.map( (hotel) => {
             return (
-              <HotelCard hotel={hotel} key={hotel.id} />
+              <HotelCard setSelectedHotel={setSelectedHotel} selectedId={selectedHotel.id} hotel={hotel} key={hotel.id} />
             );
           })}
         </HotelsWrapper>
+        {
+          selectedHotel.id?
+            <>
+              <StyledTypography variant='h6'>Ótima pedida! Agora escolha seu quarto:</StyledTypography>
+              <RoomsWrapper>
+                {selectedHotel.Rooms.map((room) => {
+                  return(<RoomCard room={room} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} key={room.id}/>);
+                })}
+              </RoomsWrapper>
+            </>
+            :
+            <></>
+        }
+        {
+          selectedRoom.id?
+            <ConfirmButton onClick={() => createBooking()}>RESERVAR QUARTO</ConfirmButton>
+            :
+            <></>
+        }
       </>}
     </Wrapper>
   );
@@ -70,9 +111,18 @@ const Wrapper = styled.div`
   }
 `;
 
+const RoomsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  &>*{
+    margin-right:20px;
+  }
+`;
+
 const HotelsWrapper = styled.div`
   display: flex;
   font-family: 'Roboto';
+  margin-bottom:10px;
 `;
 
 const HotelButton = styled.div`
@@ -163,11 +213,19 @@ const ConfirmButton = styled.button`
   line-height: 16px;
   text-align: center;
   color: #000000;
-  margin-top: 48px;
+  margin-top: 20px;
   border: none;
   width: 162px;
   height: 37px;
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 4px;
+  &:hover{
+    cursor: pointer;
+    opacity: 0.9;
+  }
+  
+  &:active{
+    transform: translateY(4px);
+  }
 `;

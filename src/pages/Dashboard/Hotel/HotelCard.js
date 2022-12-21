@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-export default function HotelCard({ hotel }) {
+export default function HotelCard({ hotel, selectedId, setSelectedHotel }) {
   const roomTypesString = stringMaker(hotel.Rooms);
   let capacity = capacityCounter(hotel.Rooms);
   return(
-    <HotelCardWrapper>
+    <HotelCardWrapper onClick={() => setSelectedHotel(hotel)} isSelected={selectedId===hotel.id}>
       <HotelImg src={hotel.image} alt={hotel.name}/>
       <h1>{hotel.name}</h1>
 
@@ -75,7 +75,7 @@ const HotelCardWrapper  = styled.div`
   align-items: center;
   box-sizing: border-box;
   padding:10px;
-  background-color: #EBEBEB;
+  background-color: ${props => props.isSelected?'#FFEED2':'#EBEBEB'};
   width:200px;
   height:300px;
   margin-right:20px;
