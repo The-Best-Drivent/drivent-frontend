@@ -4,20 +4,25 @@ import Typography from '@material-ui/core/Typography';
 import useHotel from '../../../hooks/api/useHotel';
 import useBooking from '../../../hooks/api/useBooking';
 import Loader from 'react-loader-spinner';
-import HotelCard from './HotelCard';
 
 export default function Hotel() {
-  const { hotels, hotelsLoading } = useHotel();
+  const { hotels, hotelsLoading, hotelsError } = useHotel();
   const { bookings, bookingLoading } = useBooking();
   const [ hotelsData, setHotelsData ] = useState([]);
   const [ bookingData, setBookingData ] = useState({});
+  const [ hotelError, setHotelError ] = useState('');
 
   useEffect(() => {
-    console.log(hotels);
     if(hotels) {
       setHotelsData(hotels);
     }
   }, [hotels]);
+
+  useEffect(() => {
+    if(hotelsError) {
+      setHotelError(hotelsError);
+    }
+  }, [hotelsError]);
 
   useEffect(() => {
     if(bookings) {
@@ -30,36 +35,39 @@ export default function Hotel() {
       <StyledTypography variant='h4'>Escolha de hotel e quarto</StyledTypography>
       {hotelsLoading || bookingLoading ? <span>
         {<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando
-      </span> : bookingData.booking && hotelsData !== [] ? <>
-        <h3>Você já escolheu seu quarto:</h3>
-      
-        <HotelsWrapper>
-          <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
-            <HotelImg src={bookingData.booking.Room.Hotel.image} alt={bookingData.booking.Room.Hotel.name}/>
-            <h1>{bookingData.booking.Room.Hotel.name}</h1>
-
-            <h4>{'Quarto Reservado'}</h4>
-            <h2>{bookingData.booking.Room.name + (bookingData.booking.Room.capacity === 1 ? ' (Single)' : ' (Double)')}</h2>
-
-            <h4>{'Pessoas no seu quarto'}</h4>
-            <h2>{bookingData._count === 1 ? 'Somente você' : 'Você e mais ' + bookingData._count}</h2>
-          </HotelButton>
-        </HotelsWrapper>
-        <ConfirmButton onClick={() => console.log('aqui')}>TROCAR DE QUARTO</ConfirmButton>
-      </> : <>
-        <StyledTypography variant='h6'>Primeiro, escolha seu hotel</StyledTypography>
+      </span> : hotelError !== '' ? <span>
+        <h6>Você precisa ter confirmado o pagamento antes de fazer a escolha da hospedagem</h6>
+      </span> :
+        bookingData.booking && hotelsData !== [] ? <>
+          <h3>Você já escolheu seu quarto:</h3>
         
-        <HotelsWrapper>
-          {hotelsData.map( (hotel) => {
-            return (
-              <HotelButton key={hotel.name}>
-                <HotelImg src={hotel.image} alt={hotel.name}/>
-                <h1>{hotel.name}</h1>
-              </HotelButton>
-            );
-          })}
-        </HotelsWrapper>
-      </>}
+          <HotelsWrapper>
+            <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
+              <HotelImg src={bookingData.booking.Room.Hotel.image} alt={bookingData.booking.Room.Hotel.name}/>
+              <h1>{bookingData.booking.Room.Hotel.name}</h1>
+
+              <h4>{'Quarto Reservado'}</h4>
+              <h2>{bookingData.booking.Room.name + (bookingData.booking.Room.capacity === 1 ? ' (Single)' : ' (Double)')}</h2>
+
+              <h4>{'Pessoas no seu quarto'}</h4>
+              <h2>{bookingData._count === 1 ? 'Somente você' : 'Você e mais ' + bookingData._count}</h2>
+            </HotelButton>
+          </HotelsWrapper>
+          <ConfirmButton onClick={() => console.log('aqui')}>TROCAR DE QUARTO</ConfirmButton>
+        </> : <>
+          <StyledTypography variant='h6'>Primeiro, escolha seu hotel</StyledTypography>
+          
+          <HotelsWrapper>
+            {hotelsData.map( (hotel) => {
+              return (
+                <HotelButton key={hotel.name}>
+                  <HotelImg src={hotel.image} alt={hotel.name}/>
+                  <h1>{hotel.name}</h1>
+                </HotelButton>
+              );
+            })}
+          </HotelsWrapper>
+        </>}
     </Wrapper>
   );
 }
