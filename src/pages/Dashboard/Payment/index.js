@@ -28,7 +28,6 @@ export default function Payment() {
   });
   const token = useToken();
   
-  const ticketId = 3;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,7 +101,7 @@ export default function Payment() {
                   disable={true}
                 />
               </Choices>
-              <CreditCard ticketId={ticketId} />
+              <CreditCard ticketId = {paymentData.id}/>
             </>
           ) : (
             <>
