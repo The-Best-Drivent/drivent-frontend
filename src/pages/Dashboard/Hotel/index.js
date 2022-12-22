@@ -14,26 +14,32 @@ import * as bookingApi from '../../../services/bookingApi';
 
 export default function Hotel() {
   const token = useToken();
-  const { hotels, hotelsLoading } = useHotel();
+  const { hotels, hotelsLoading, hotelsError } = useHotel();
   const { bookings, bookingLoading } = useBooking();
-  const [hotelsData, setHotelsData] = useState([]);
-  const [selectedHotel, setSelectedHotel] = useState({});
-  const [selectedRoom, setSelectedRoom] = useState({});
-  const [bookingData, setBookingData] = useState({});
-  const [paymentData, setPaymentData] = useState('');
+  const [ hotelsData, setHotelsData ] = useState([]);
+  const [ selectedHotel, setSelectedHotel  ] = useState({});
+  const [ selectedRoom, setSelectedRoom ] = useState({});
+  const [ bookingData, setBookingData ] = useState({});
+  const [ paymentData, setPaymentData ] = useState('');
+  const [ hotelError, setHotelError ] = useState('');
   const { paymentLoading, payment, enrollmentLoading, enrollment } = usePaymentPaid();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(hotels);
     if (hotels) {
       setHotelsData(hotels);
     }
   }, [hotels]);
 
   useEffect(() => {
-    if (bookings) {
+    if(hotelsError) {
+      setHotelError(hotelsError);
+    }
+  }, [hotelsError]);
+
+  useEffect(() => {
+    if(bookings) {
       setBookingData(bookings);
     }
   }, [bookings]);

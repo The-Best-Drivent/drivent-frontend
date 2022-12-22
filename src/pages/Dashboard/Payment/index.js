@@ -6,11 +6,15 @@ import ChoiceBox from '../../../components/Payment/ChoiceBox';
 import CreditCard from '../../../components/Payment/CreditCard';
 import useTicketType from '../../../hooks/api/useTicketType';
 import useTicket from '../../../hooks/api/useTicket';
+import useToken from '../../../hooks/useToken';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 export default function Payment() {
   const { paymentLoading, payment, enrollmentLoading, enrollment } = usePaymentPaid();
-  const { getTicketType } = useTicketType();
+  const { postTicketType, } = useTicketType();
   const { postTicket } = useTicket();
+  
   const [enrollmentData, setEnrollmentData] = useState('');
   const [paymentData, setPaymentData] = useState('');
   const [typeSelector, setTypeSelector] = useState('');
@@ -22,141 +26,144 @@ export default function Payment() {
     includesHotel: false,
     price: 0,
   });
-  const [reserve, setReserve] = useState(false);
+  const token = useToken();
+  
   const ticketId = 3;
+  const navigate = useNavigate();
 
-  try {
-    useEffect(() => {
-      if (payment) {
-        setPaymentData(payment);
-      }
-    }, [payment]);
-
-    useEffect(() => {
-      if (enrollment) {
-        setEnrollmentData(enrollment);
-      }
-    }, [enrollment]);
-
-    useEffect(async() => {
-      const ticketTypes = await getTicketType();
-      const type = ticketTypes.filter(
-        (item) => item.isRemote === ticket.isRemote && item.includesHotel === ticket.includesHotel
-      );
-      submitTicket(type);
-    }, [ticket]);
-
-    function submitTicket(type) {
-      if(type) {
-        const id = type[0].id;
-        postTicket({ id: id });
-      }
+  useEffect(() => {
+    if (payment) {
+      setPaymentData(payment);
     }
+  }, [payment]);
 
-    return (
-      <Wrapper>
-        <h1>Ingresso e Pagamento</h1>
-        {paymentLoading || enrollmentLoading ? (
-          <span>{<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando</span>
-        ) : enrollmentData !== '' ? (
-          <>
-            {paymentData !== '' && paymentData.status === 'PAID' ? (
+  useEffect(() => {
+    if (enrollment) {
+      setEnrollmentData(enrollment);
+    }
+  }, [enrollment]);
+
+  useEffect(() => {
+    setTicket({
+      isRemote: !typeSelector,
+      includesHotel: hotelSelector === '' || !typeSelector === true ? false : !hotelSelector,
+      price: !typeSelector ? Number(typePrice) : Number(typePrice) + Number(hotelPrice),
+    });
+  }, [typeSelector, hotelSelector, typePrice, hotelPrice]);
+
+  async function submitTicket(ticket) {
+    try {
+      const postedTicketType = await postTicketType(ticket, token);
+      await postTicket({ ticketTypeId: postedTicketType.id }, token);
+      toast('Ingresso reservado com sucesso!');
+      navigate('/dashboard/payment');
+    } catch (error) {
+      toast('Não foi possivel reservar seu ingresso ;-;');
+    }
+  }
+
+  return (
+    <Wrapper>
+      <h1>Ingresso e Pagamento</h1>
+      {paymentLoading || enrollmentLoading ? (
+        <span>{<StyledLoader color="#000000" height={26} width={26} type="Oval" />} Carregando</span>
+      ) : enrollmentData !== '' ? (
+        <>
+          {paymentData !== '' && paymentData.status === 'PAID' ? (
+            <>
+              <h4>Ingresso escolhido</h4>
+              <Choices>
+                <ChoiceBox
+                  description={
+                    (paymentData.TicketType.isRemote ? 'Remoto' : 'Presencial') +
+                    (paymentData.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')
+                  }
+                  price={Number(paymentData.TicketType.price)}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <h4>Pagamento</h4>
               <>
-                <h4>Ingresso escolhido</h4>
+                <h3>Pagamento confirmado!</h3>
+                <h2>Prossiga para a escolha de hospedagem e atividades</h2>
+              </>
+            </>
+          ) : paymentData !== '' && paymentData.status === 'RESERVED' ? (
+            <>
+              <Choices>
+                <ChoiceBox
+                  description={
+                    (paymentData.TicketType.isRemote ? 'Remoto' : 'Presencial') +
+                    (paymentData.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')
+                  }
+                  price={Number(paymentData.TicketType.price)}
+                  selectState={true}
+                  disable={true}
+                />
+              </Choices>
+              <CreditCard ticketId={ticketId} />
+            </>
+          ) : (
+            <>
+              <h4>Primeiro, escolha sua modalidade de ingresso</h4>
+              <Choices>
+                <ChoiceBox
+                  description={'Presencial'}
+                  price={250}
+                  selectState={typeSelector === '' ? false : typeSelector}
+                  selector={setTypeSelector}
+                  setPrice={setTypePrice}
+                />
+                <ChoiceBox
+                  description={'Remoto'}
+                  price={100}
+                  selectState={typeSelector === '' ? false : !typeSelector}
+                  selector={setTypeSelector}
+                  setPrice={setTypePrice}
+                />
+              </Choices>
+              <SecondStep remote={!typeSelector}>
+                <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
                 <Choices>
                   <ChoiceBox
-                    description={
-                      (paymentData.TicketType.isRemote ? 'Remoto' : 'Presencial') +
-                      (paymentData.TicketType.includesHotel ? ' + Com Hotel' : ' + Sem Hotel')
-                    }
-                    price={Number(paymentData.TicketType.price)}
-                    selectState={true}
-                    disable={true}
-                  />
-                </Choices>
-                <h4>Pagamento</h4>
-                <>
-                  <h3>Pagamento confirmado!</h3>
-                  <h2>Prossiga para a escolha de hospedagem e atividades</h2>
-                </>
-              </>
-            ) : paymentData !== '' && paymentData.status === 'RESERVED' ? (
-              <>
-                <Choices>
-                  <ChoiceBox
-                    description={'Presencial' + ' + Com Hotel'}
-                    price={500}
-                    selectState={true}
-                    disable={true}
-                  />
-                </Choices>
-                <CreditCard ticketId={ticketId} />
-              </>
-            ) : (
-              <>
-                <h4>Primeiro, escolha sua modalidade de ingresso</h4>
-                <Choices>
-                  <ChoiceBox
-                    description={'Presencial'}
-                    price={250}
-                    selectState={typeSelector === '' ? false : typeSelector}
-                    selector={setTypeSelector}
-                    setPrice={setTypePrice}
+                    description={'Sem Hotel'}
+                    price={0}
+                    selectState={hotelSelector === '' ? false : hotelSelector}
+                    selector={setHotelSelector}
+                    setPrice={setHotelPrice}
                   />
                   <ChoiceBox
-                    description={'Remoto'}
-                    price={100}
-                    selectState={typeSelector === '' ? false : !typeSelector}
-                    selector={setTypeSelector}
-                    setPrice={setTypePrice}
+                    description={'Com Hotel'}
+                    price={350}
+                    selectState={hotelSelector === '' ? false : !hotelSelector}
+                    selector={setHotelSelector}
+                    setPrice={setHotelPrice}
                   />
                 </Choices>
-                <SecondStep remote={!typeSelector}>
-                  <h4>Ótimo! Agora escolha sua modalidade de hospedagem</h4>
-                  <Choices>
-                    <ChoiceBox
-                      description={'Sem Hotel'}
-                      price={0}
-                      selectState={hotelSelector === '' ? false : hotelSelector}
-                      selector={setHotelSelector}
-                      setPrice={setHotelPrice}
-                    />
-                    <ChoiceBox
-                      description={'Com Hotel'}
-                      price={350}
-                      selectState={hotelSelector === '' ? false : !hotelSelector}
-                      selector={setHotelSelector}
-                      setPrice={setHotelPrice}
-                    />
-                  </Choices>
-                </SecondStep>
-                <ThirdStep hide={(typeSelector === true && hotelSelector === '') || typeSelector === '' ? true : false}>
-                  <h4>
-                    Fechado! O total ficou em{' '}
-                    <strong>{!typeSelector ? Number(typePrice) : Number(typePrice) + Number(hotelPrice)}</strong>. Agora
-                    é só confirmar:
-                  </h4>
-                  <ConfirmButton
-                    onClick={() => {setTicket({
-                      isRemote: !typeSelector,
-                      includesHotel: hotelSelector === '' || !typeSelector === true ? false : !hotelSelector,
-                      price: typePrice === 100 ? Number(typePrice) : Number(typePrice) + Number(hotelPrice),
-                    }); submitTicket();}}
-                  >
-                    RESERVAR INGRESSO
-                  </ConfirmButton>
-                </ThirdStep>
-              </>
-            )}
-          </>
-        ) : (
-          <span>
-            <h4>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</h4>
-          </span>
-        )}
-      </Wrapper>
-    );
-  } catch (error) {}
+              </SecondStep>
+              <ThirdStep hide={(typeSelector === true && hotelSelector === '') || typeSelector === '' ? true : false}>
+                <h4>
+                  Fechado! O total ficou em{' '}
+                  <strong>{!typeSelector ? Number(typePrice) : Number(typePrice) + Number(hotelPrice)}</strong>. Agora
+                  é só confirmar:
+                </h4>
+                <ConfirmButton
+                  onClick={() => submitTicket(ticket)}
+                >
+                  RESERVAR INGRESSO
+                </ConfirmButton>
+              </ThirdStep>
+            </>
+          )}
+        </>
+      ) : (
+        <span>
+          <h4>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</h4>
+        </span>
+      )}
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.div`

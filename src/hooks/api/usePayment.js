@@ -10,7 +10,6 @@ export default function usePaymentPaid() {
     data: payment,
     loading: paymentLoading,
     error: paymentError,
-    act: getPayment,
   } =  useAsync(() => ticketApi.getTickets(token));
 
   const {
