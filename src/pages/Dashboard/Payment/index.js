@@ -21,6 +21,7 @@ export default function Payment() {
   const [hotelSelector, setHotelSelector] = useState('');
   const [typePrice, setTypePrice] = useState(0);
   const [hotelPrice, setHotelPrice] = useState(0);
+  const [button, setButton] = useState(false);
   const [ticket, setTicket] = useState({
     isRemote: false,
     includesHotel: false,
@@ -28,7 +29,6 @@ export default function Payment() {
   });
   const token = useToken();
   
-  const ticketId = 3;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,7 +56,6 @@ export default function Payment() {
       const postedTicketType = await postTicketType(ticket, token);
       await postTicket({ ticketTypeId: postedTicketType.id }, token);
       toast('Ingresso reservado com sucesso!');
-      navigate('/dashboard/payment');
     } catch (error) {
       toast('Não foi possivel reservar seu ingresso ;-;');
     }
@@ -102,7 +101,7 @@ export default function Payment() {
                   disable={true}
                 />
               </Choices>
-              <CreditCard ticketId={ticketId} />
+              <CreditCard ticketId = {paymentData.id}/>
             </>
           ) : (
             <>

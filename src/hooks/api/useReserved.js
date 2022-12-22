@@ -10,7 +10,7 @@ export default function usePaymentReserved() {
     loading: paymentLoading,
     error: paymentError,
     act: pay
-  } =  useAsync(() => paymentApi.pay(token));
+  } =  useAsync((body) => paymentApi.pay(body, token), false);
 
   return {
     paymentLoading,
