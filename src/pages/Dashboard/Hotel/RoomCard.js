@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { IoPersonOutline, IoPerson } from 'react-icons/io5';
 
-export default function RoomCard({ room, selectedRoom, setSelectedRoom }) {
+export default function RoomCard({ room, selectedRoom, setSelectedRoom, roomPreSelected }) {
   let color = 'white';
   let iconColor = '#454545';
   let available = new Array(room.capacity-room.Booking.length).fill(0);
@@ -29,9 +29,18 @@ export default function RoomCard({ room, selectedRoom, setSelectedRoom }) {
           })
         }
         {
-          room.Booking.map(() => {
-            return(<IoPerson />);
-          })
+          selectedRoom.id === room.id ? (
+            room.Booking.map((index) => {
+              if (index !== 0) {
+                return(<IoPersonOutline />);
+              }
+              return(<IoPerson />);
+            })
+          ) : (
+            room.Booking.map(() => {
+              return(<IoPerson />);
+            })
+          )
         }
       </IconWrapper>
     </RoomCardWrapper>

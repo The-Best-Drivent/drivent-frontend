@@ -4,6 +4,7 @@ import 'react-credit-cards/es/styles-compiled.css';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import usePaymentReserved from '../../../hooks/api/useReserved';
+import { useNavigate } from 'react-router-dom';
 
 const CreditCard = ({ ticketId }) => {
   const [number, SetNumber] = useState('');
@@ -12,6 +13,7 @@ const CreditCard = ({ ticketId }) => {
   const [cvc, SetCvc] = useState('');
   const [focus, SetFocus] = useState('');
   const { pay } = usePaymentReserved();
+  const navigate = useNavigate();
 
   async function sendPay() {
     const body = {
@@ -24,19 +26,33 @@ const CreditCard = ({ ticketId }) => {
         cvc: cvc
       }
     };
-    try {
-      await pay(body);
-      toast('Pagamento Realizado com sucesso!');
-    } catch (error) {
-      toast('Não foi possível fazer o pagamento!');
+    if (body.cardData.cvc === '' || 
+      body.cardData.expirationDate === '' || 
+      body.cardData.name === '' || 
+      body.cardData.number === '' || 
+      isNaN(Number(body.cardData.cvc)) !== false || 
+      body.cardData.cvc.length !== 3 || 
+      body.cardData.expirationDate.length <= 3 ||
+      body.cardData.expirationDate.length >= 6 || 
+      isNaN(Number(body.cardData.expirationDate.replace('/', ''))) !== false ||
+      body.cardData.number.length <= 12 ||
+      body.cardData.number.length >= 17 || 
+      isNaN(Number(body.cardData.number.replace('.', '').replace('-', ''))) !== false
+    ) {
+      toast('Coloque dados validos para realizar o pagamento!');
+    } else {
+      try {
+        await pay(body);
+        navigate(0);
+      } catch (error) {
+        toast('Não foi possível fazer o pagamento!');
+      }
     }
   }
 
   return (
     <>
       <Container>
-        {/* <div className="rccs__card backcolor"> */}
-
         <div clasName="rccs__card rccs__card--unknown">
           <Cards
             number={number}
@@ -119,55 +135,57 @@ export default CreditCard;
 
 const Container = styled.div`
     display: flex;
-    padding-bottom: 50px;
+    padding-bottom: 30px;
+
     form{
       padding-left: 80px;
       textarea:focus, input:focus {
-    box-shadow: 10 0 0 0;
-    outline: 0;
-}
-      
-
+        box-shadow: 10 0 0 0;
+        outline: 0;
+      }
     }
+
     .row{
       display: flex;
       width: 350px;
-      padding-top: 9px;
       
       .col-sm-11{
         width: 100%;
         
         input{
-        width: 100%;
-        height: 6vh;
-        border: solid 1px gray;
-        border-radius: 5px;
-      }
+          width: 100%;
+          height: 6vh;
+          border: solid 1px gray;
+          border-radius: 5px;
+          padding-left: 10px
+        }
       }
       .col-sm-5{
         width: 35%;
         padding-left: 10px;
         
         input{
-        width: 100%;
-        height: 6vh;
-        border: solid 1px gray;
-        border-radius: 5px;
-      }
+          width: 100%;
+          height: 6vh;
+          border: solid 1px gray;
+          border-radius: 5px;
+          padding-left: 10px
+        }
       }
       .col-sm-6{
         width: 65%;
         
-        
         input{
-        width: 100%;
-        height: 6vh;
-        border: solid 1px gray;
-        border-radius: 5px;
-      }
+          width: 100%;
+          height: 6vh;
+          border: solid 1px gray;
+          border-radius: 5px;
+          padding-left: 10px
+        }
       }
     }
 `;
+
 const ConfirmButton = styled.button`
   font-family: 'Roboto';
   font-weight: 400;
