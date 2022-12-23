@@ -9,6 +9,7 @@ import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { IoIosCheckmarkCircle } from 'react-icons/io';
 
 export default function Payment() {
   const { paymentLoading, payment, enrollmentLoading, enrollment } = usePaymentPaid();
@@ -55,9 +56,9 @@ export default function Payment() {
     try {
       const postedTicketType = await postTicketType(ticket, token);
       await postTicket({ ticketTypeId: postedTicketType.id }, token);
-      toast('Ingresso reservado com sucesso!');
+      navigate(0);
     } catch (error) {
-      toast('Não foi possivel reservar seu ingresso ;-;');
+      toast('Não foi possivel reservar seu ingresso!');
     }
   }
 
@@ -83,13 +84,20 @@ export default function Payment() {
                 />
               </Choices>
               <h4>Pagamento</h4>
-              <>
-                <h3>Pagamento confirmado!</h3>
-                <h2>Prossiga para a escolha de hospedagem e atividades</h2>
-              </>
+              <div className='checkBox'>
+                <IoIosCheckmarkCircle
+                  size={60}
+                  color={'green'}
+                />
+                <div className='descriptionText'>
+                  <h3>Pagamento confirmado!</h3>
+                  <h2>Prossiga para a escolha de hospedagem e atividades</h2>
+                </div>
+              </div>
             </>
           ) : paymentData !== '' && paymentData.status === 'RESERVED' ? (
             <>
+              <h4>Ingresso escolhido</h4>
               <Choices>
                 <ChoiceBox
                   description={
@@ -101,6 +109,7 @@ export default function Payment() {
                   disable={true}
                 />
               </Choices>
+              <h4>Pagamento</h4>
               <CreditCard ticketId = {paymentData.id}/>
             </>
           ) : (
@@ -192,7 +201,6 @@ const Wrapper = styled.div`
 
   h4 {
     font-size: 18px;
-    line-height: 23px;
     color: #8e8e8e;
     margin: 16px 0;
   }
@@ -207,6 +215,18 @@ const Wrapper = styled.div`
     max-width: 400px;
     text-align: center;
     margin-right: 8px;
+  }
+
+  .checkBox {
+    display: flex;
+    flex-direction: row;
+
+    .descriptionText {
+      margin-left: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
   }
 `;
 
