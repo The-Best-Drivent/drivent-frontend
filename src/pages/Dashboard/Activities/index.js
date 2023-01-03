@@ -1,14 +1,18 @@
 import styled from 'styled-components';
+import { useState } from 'react';
 
 export default function Activities() {
+  const [day, setDay] = useState(-1);
+  console.log(day);
+
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
       <h4>Primeiro, filtre pelo dia do evento:</h4>
       <div>
-        <DayButton>Sexta, 22/10</DayButton>
-        <DayButton>Sexta, 22/10</DayButton>
-        <DayButton>Sexta, 22/10</DayButton>
+        <DayButton day={day} onClick={() => setDay(1)}>Sexta, 22/10</DayButton>
+        <DayButton day={day} onClick={() => setDay(2)}>Sexta, 22/10</DayButton>
+        <DayButton day={day} onClick={() => setDay(3)}>Sexta, 22/10</DayButton>
       </div>
       <GridContainer>
         <div>
@@ -195,6 +199,10 @@ const DayButton = styled.button`
   font-size: 14px;
   line-height: 16px;
   color: #000000;
+
+  &:nth-of-type(${props => props.day}) {
+    background-color: #FFD37D;
+  }
 `;
 
 const GridContainer = styled.div`
