@@ -2,179 +2,156 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import Loader from 'react-loader-spinner';
+import useActivities from '../../../hooks/api/useActivities';
 
 export default function Activities() {
-  const [ paymentData, setPaymentData ] = useState('');
+  const [paymentData, setPaymentData] = useState('');
+  const [activitiesData, setActivitiesData] = useState('');
   const [day, setDay] = useState(-1);
   const { paymentLoading, payment } = usePaymentPaid();
+  const { activities } = useActivities();
 
   useEffect(() => {
     if (payment) {
       setPaymentData(payment);
     }
   }, [payment]);
-  console.log(paymentData);
+
+  useEffect(() => {
+    if (activities) {
+      setActivitiesData(activities);
+    }
+  }, [activities]);
+
+  console.log(activitiesData);
+
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
-      {
-        paymentLoading ? (
-          <span>{<StyledLoader color="#000000" height={26} width={26} type="Oval"></StyledLoader>} Carregando</span>
-        ) : ( paymentData === '' || (paymentData !== '' && paymentData.status === 'RESERVED') ? (
-          <span>
-            <h5>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</h5>
-          </span>
-        ) : paymentData !=='' && paymentData.TicketType.isRemote ? (
-          <span>
-            <h5>Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.</h5>
-          </span>
-        ) :
-          <>
-            <h4>Primeiro, filtre pelo dia do evento:</h4>
+      {paymentLoading ? (
+        <span>{<StyledLoader color="#000000" height={26} width={26} type="Oval"></StyledLoader>} Carregando</span>
+      ) : paymentData === '' || (paymentData !== '' && paymentData.status === 'RESERVED') ? (
+        <span>
+          <h5>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</h5>
+        </span>
+      ) : paymentData !== '' && paymentData.TicketType.isRemote ? (
+        <span>
+          <h5>Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.</h5>
+        </span>
+      ) : (
+        <>
+          <h4>Primeiro, filtre pelo dia do evento:</h4>
+          <div>
+            <DayButton day={day} onClick={() => setDay(1)}>
+              Sexta, 22/10
+            </DayButton>
+            <DayButton day={day} onClick={() => setDay(2)}>
+              Sexta, 22/10
+            </DayButton>
+            <DayButton day={day} onClick={() => setDay(3)}>
+              Sexta, 22/10
+            </DayButton>
+          </div>
+          <GridContainer>
             <div>
-              <DayButton day={day} onClick={() => setDay(1)}>Sexta, 22/10</DayButton>
-              <DayButton day={day} onClick={() => setDay(2)}>Sexta, 22/10</DayButton>
-              <DayButton day={day} onClick={() => setDay(3)}>Sexta, 22/10</DayButton>
+              <Title>Auditório Principal</Title>
+              <ActivitiesContainer>
+                {activitiesData
+                  .filter((item) => item.location === 'Auditório Principal')
+                  .map((item) =>
+                    item.duration === 1 ? (
+                      <OneHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 10:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </OneHourActivity>
+                    ) : (
+                      <TwoHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 11:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </TwoHourActivity>
+                    )
+                  )}
+              </ActivitiesContainer>
             </div>
-            <GridContainer>
-              <div>
-                <Title>Auditório Principal</Title>
-                <ActivitiesContainer>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                  <TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity>
-                </ActivitiesContainer>
-              </div>
-              <div>
-                <Title>Auditório Secundário</Title>
-                <ActivitiesContainer>
-                  <TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                  <TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity>
-                  <TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity>
-                </ActivitiesContainer>
-              </div>
-              <div>
-                <Title>Sala de Workshop I</Title>
-                <ActivitiesContainer>
-                  <TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity><TwoHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </TwoHourActivity>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                  <OneHourActivity>
-                    <div>
-                      <p>Palestra X</p>
-                      <p>09:00 - 10:00</p>
-                    </div>
-                    <div>
-                      <ion-icon name="enter-outline"></ion-icon>
-                      <span>27 vagas</span>
-                    </div>
-                  </OneHourActivity>
-                </ActivitiesContainer>
-              </div>
-            </GridContainer>
-          </>
-        )
-      }
+            <div>
+              <Title>Auditório Secundário</Title>
+              <ActivitiesContainer>
+                {activitiesData
+                  .filter((item) => item.location === 'Auditório Secundário')
+                  .map((item) =>
+                    item.duration === 1 ? (
+                      <OneHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 10:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </OneHourActivity>
+                    ) : (
+                      <TwoHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 11:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </TwoHourActivity>
+                    )
+                  )}
+              </ActivitiesContainer>
+            </div>
+            <div>
+              <Title>Sala de Workshop</Title>
+              <ActivitiesContainer>
+                {activitiesData
+                  .filter((item) => item.location === 'Sala de Workshop')
+                  .map((item) =>
+                    item.duration === 1 ? (
+                      <OneHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 10:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </OneHourActivity>
+                    ) : (
+                      <TwoHourActivity>
+                        <div>
+                          <p>{item.name}</p>
+                          <p>09:00 - 11:00</p>
+                        </div>
+                        <div>
+                          <ion-icon name="enter-outline"></ion-icon>
+                          <span>{item.seats} vagas</span>
+                        </div>
+                      </TwoHourActivity>
+                    )
+                  )}
+              </ActivitiesContainer>
+            </div>
+          </GridContainer>
+        </>
+      )}
     </Wrapper>
   );
 }
@@ -212,7 +189,7 @@ const Wrapper = styled.div`
     justify-content: center;
     margin-top: 25%;
   }
-  
+
   h5 {
     width: 50%;
     font-size: 18px;
@@ -240,8 +217,8 @@ const DayButton = styled.button`
   line-height: 16px;
   color: #000000;
 
-  &:nth-of-type(${props => props.day}) {
-    background-color: #FFD37D;
+  &:nth-of-type(${(props) => props.day}) {
+    background-color: #ffd37d;
   }
 `;
 
@@ -258,7 +235,7 @@ const GridContainer = styled.div`
   & > div {
     width: 100%;
     height: 100%;
-}
+  }
 `;
 
 const Title = styled.div`
