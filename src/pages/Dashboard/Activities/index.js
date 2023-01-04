@@ -6,10 +6,11 @@ import useActivities from '../../../hooks/api/useActivities';
 
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
-  const [activitiesData, setActivitiesData] = useState('');
-  const [day, setDay] = useState(-1);
+  const [activitiesData, setActivitiesData] = useState([]);
+  const [day, setDay] = useState('');
   const { paymentLoading, payment } = usePaymentPaid();
   const { activities } = useActivities();
+  const [number, setNumber] = useState(-1);
 
   useEffect(() => {
     if (payment) {
@@ -22,8 +23,6 @@ export default function Activities() {
       setActivitiesData(activities);
     }
   }, [activities]);
-
-  console.log(activitiesData);
 
   return (
     <Wrapper>
@@ -42,14 +41,32 @@ export default function Activities() {
         <>
           <h4>Primeiro, filtre pelo dia do evento:</h4>
           <div>
-            <DayButton day={day} onClick={() => setDay(1)}>
+            <DayButton
+              number={number}
+              onClick={() => {
+                setDay('2023-10-22');
+                setNumber(1);
+              }}
+            >
               Sexta, 22/10
             </DayButton>
-            <DayButton day={day} onClick={() => setDay(2)}>
-              Sexta, 22/10
+            <DayButton
+              number={number}
+              onClick={() => {
+                setDay('2023-10-23');
+                setNumber(2);
+              }}
+            >
+              Sábado, 23/10
             </DayButton>
-            <DayButton day={day} onClick={() => setDay(3)}>
-              Sexta, 22/10
+            <DayButton
+              number={number}
+              onClick={() => {
+                setDay('2023-10-24');
+                setNumber(3);
+              }}
+            >
+              Domingo, 24/10
             </DayButton>
           </div>
           <GridContainer>
@@ -58,6 +75,7 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesData
                   .filter((item) => item.location === 'Auditório Principal')
+                  .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
                     item.duration === 1 ? (
                       <OneHourActivity>
@@ -90,6 +108,7 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesData
                   .filter((item) => item.location === 'Auditório Secundário')
+                  .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
                     item.duration === 1 ? (
                       <OneHourActivity>
@@ -122,6 +141,7 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesData
                   .filter((item) => item.location === 'Sala de Workshop')
+                  .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
                     item.duration === 1 ? (
                       <OneHourActivity>
@@ -217,7 +237,7 @@ const DayButton = styled.button`
   line-height: 16px;
   color: #000000;
 
-  &:nth-of-type(${(props) => props.day}) {
+  &:nth-of-type(${(props) => props.number}) {
     background-color: #ffd37d;
   }
 `;
