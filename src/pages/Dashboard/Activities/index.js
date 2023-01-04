@@ -24,6 +24,8 @@ export default function Activities() {
     }
   }, [activities]);
 
+  console.log(activitiesData[0].date.slice(11, 13));
+
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
@@ -81,7 +83,7 @@ export default function Activities() {
                       <OneHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 10:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
@@ -92,7 +94,7 @@ export default function Activities() {
                       <TwoHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 11:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
@@ -114,7 +116,7 @@ export default function Activities() {
                       <OneHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 10:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
@@ -125,7 +127,7 @@ export default function Activities() {
                       <TwoHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 11:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
@@ -147,7 +149,7 @@ export default function Activities() {
                       <OneHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 10:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
@@ -158,7 +160,7 @@ export default function Activities() {
                       <TwoHourActivity>
                         <div>
                           <p>{item.name}</p>
-                          <p>09:00 - 11:00</p>
+                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                         </div>
                         <div>
                           <ion-icon name="enter-outline"></ion-icon>
