@@ -24,7 +24,7 @@ export default function Activities() {
     }
   }, [activities]);
 
-  console.log(activitiesData[0].date.slice(11, 13));
+  console.log(activitiesData);
 
   return (
     <Wrapper>
