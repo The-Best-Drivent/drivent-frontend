@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import usePaymentPaid from '../../../hooks/api/usePayment';
 import Loader from 'react-loader-spinner';
 import useActivities from '../../../hooks/api/useActivities';
+import { IoEnterOutline } from 'react-icons/io5';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
@@ -23,8 +25,6 @@ export default function Activities() {
       setActivitiesData(activities);
     }
   }, [activities]);
-
-  console.log(activitiesData[0].date.slice(11, 13));
 
   return (
     <Wrapper>
@@ -79,29 +79,28 @@ export default function Activities() {
                   .filter((item) => item.location === 'Auditório Principal')
                   .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
-                    item.duration === 1 ? (
-                      <OneHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </OneHourActivity>
-                    ) : (
-                      <TwoHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </TwoHourActivity>
-                    )
+                    <Activity
+                      noVacancy={item.seats - item._count.Registration > 0}
+                      duration={item.duration}
+                    >
+                      <div>
+                        <p>{item.name}</p>
+                        <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
+                      </div>
+                      <div>
+                        {(item.seats - item._count.Registration) > 0 ? <>
+                          <IoEnterOutline 
+                            size={35}
+                          ></IoEnterOutline>
+                          <span>{item.seats - item._count.Registration} vagas</span>
+                        </> : <>
+                          <AiOutlineCloseCircle 
+                            size={35}
+                          ></AiOutlineCloseCircle>
+                          <span>Esgotado</span>
+                        </>}
+                      </div>
+                    </Activity>
                   )}
               </ActivitiesContainer>
             </div>
@@ -112,29 +111,28 @@ export default function Activities() {
                   .filter((item) => item.location === 'Auditório Secundário')
                   .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
-                    item.duration === 1 ? (
-                      <OneHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </OneHourActivity>
-                    ) : (
-                      <TwoHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </TwoHourActivity>
-                    )
+                    <Activity
+                      noVacancy={item.seats - item._count.Registration > 0}
+                      duration={item.duration}
+                    >
+                      <div>
+                        <p>{item.name}</p>
+                        <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
+                      </div>
+                      <div>
+                        {(item.seats - item._count.Registration) > 0 ? <>
+                          <IoEnterOutline 
+                            size={35}
+                          ></IoEnterOutline>
+                          <span>{item.seats - item._count.Registration} vagas</span>
+                        </> : <>
+                          <AiOutlineCloseCircle 
+                            size={35}
+                          ></AiOutlineCloseCircle>
+                          <span>Esgotado</span>
+                        </>}
+                      </div>
+                    </Activity>
                   )}
               </ActivitiesContainer>
             </div>
@@ -145,29 +143,28 @@ export default function Activities() {
                   .filter((item) => item.location === 'Sala de Workshop')
                   .filter((item) => item.date.slice(0, 10) === day)
                   .map((item) =>
-                    item.duration === 1 ? (
-                      <OneHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </OneHourActivity>
-                    ) : (
-                      <TwoHourActivity>
-                        <div>
-                          <p>{item.name}</p>
-                          <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
-                        </div>
-                        <div>
-                          <ion-icon name="enter-outline"></ion-icon>
-                          <span>{item.seats} vagas</span>
-                        </div>
-                      </TwoHourActivity>
-                    )
+                    <Activity
+                      noVacancy={item.seats - item._count.Registration > 0}
+                      duration={item.duration}
+                    >
+                      <div>
+                        <p>{item.name}</p>
+                        <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
+                      </div>
+                      <div>
+                        {(item.seats - item._count.Registration) > 0 ? <>
+                          <IoEnterOutline 
+                            size={35}
+                          ></IoEnterOutline>
+                          <span>{item.seats - item._count.Registration} vagas</span>
+                        </> : <>
+                          <AiOutlineCloseCircle 
+                            size={35}
+                          ></AiOutlineCloseCircle>
+                          <span>Esgotado</span>
+                        </>}
+                      </div>
+                    </Activity>
                   )}
               </ActivitiesContainer>
             </div>
@@ -200,7 +197,7 @@ const Wrapper = styled.div`
 
   & > div:nth-of-type(1) {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     gap: 20px;
     margin: 10px 0;
@@ -209,7 +206,6 @@ const Wrapper = styled.div`
   span {
     display: flex;
     justify-content: center;
-    margin-top: 25%;
   }
 
   h5 {
@@ -283,7 +279,7 @@ const ActivitiesContainer = styled.div`
   gap: 10px;
 `;
 
-const OneHourActivity = styled.div`
+const Activity = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -291,20 +287,17 @@ const OneHourActivity = styled.div`
   border-radius: 5px;
   border: none;
   width: 100%;
-  min-height: 80px;
+  min-height: ${(props) => ((props.duration * 80) + 'px')};
   padding: 10px;
 
   & > div {
     display: flex;
     flex-direction: column;
-    height: 100%;
   }
 
   & > div:nth-of-type(1) {
     width: 70%;
     align-items: flex-start;
-    gap: 5px;
-    border-right: 1px solid #cfcfcf;
     padding: 5px;
   }
 
@@ -318,17 +311,20 @@ const OneHourActivity = styled.div`
 
   & > div > p:nth-of-type(1) {
     font-weight: 700;
+    margin-bottom: 4px;
   }
 
   & > div:nth-of-type(2) {
-    color: #078632;
+    color: ${(props) => (!props.noVacancy ? '#CC6666' : '#078632')};
     width: 30%;
     align-items: center;
     justify-content: center;
-  }
+    border-left: 1px solid #cfcfcf;
 
-  ion-icon {
-    font-size: 26px;
+    span {
+      font-size: 12px;
+      margin-top: 4px;
+    }
   }
 
   span {
@@ -337,13 +333,13 @@ const OneHourActivity = styled.div`
     font-size: 9px;
     line-height: 11px;
   }
+
+  div {
+    height: ${(props) => ((props.duration * 80) + 'px')};
+  }
 `;
 
 const StyledLoader = styled(Loader)`
   position: relative;
   top: -4.5px;
-`;
-
-const TwoHourActivity = styled(OneHourActivity)`
-  min-height: 170px;
 `;
