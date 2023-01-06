@@ -9,9 +9,10 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
   const [activitiesData, setActivitiesData] = useState([]);
-  const [day, setDay] = useState('');
+  const [days, setDays] = useState();
   const { paymentLoading, payment } = usePaymentPaid();
-  const { activities } = useActivities();
+  const { activitiesLoading, activitie } = useActivities();
+
   const [number, setNumber] = useState(-1);
 
   useEffect(() => {
@@ -20,12 +21,15 @@ export default function Activities() {
     }
   }, [payment]);
 
-  useEffect(() => {
-    if (activities) {
-      setActivitiesData(activities);
+  async function getActivities({ day }) {
+    try {
+      const data = await activitie(day);
+      setActivitiesData(data);
+    } catch (error) {
+      console.log(error);
     }
-  }, [activities]);
-
+  }
+ 
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
@@ -46,8 +50,9 @@ export default function Activities() {
             <DayButton
               number={number}
               onClick={() => {
-                setDay('2023-10-22');
+                setDays('2023-10-22');
                 setNumber(1);
+                getActivities({ day: '2023-10-22' });
               }}
             >
               Sexta, 22/10
@@ -55,8 +60,9 @@ export default function Activities() {
             <DayButton
               number={number}
               onClick={() => {
-                setDay('2023-10-23');
+                setDays('2023-10-23');
                 setNumber(2);
+                getActivities({ day: '2023-10-23' });
               }}
             >
               Sábado, 23/10
@@ -64,8 +70,9 @@ export default function Activities() {
             <DayButton
               number={number}
               onClick={() => {
-                setDay('2023-10-24');
+                setDays('2023-10-24');
                 setNumber(3);
+                getActivities({ day: '2023-10-24' });
               }}
             >
               Domingo, 24/10
@@ -75,9 +82,11 @@ export default function Activities() {
             <div>
               <Title>Auditório Principal</Title>
               <ActivitiesContainer>
-                {activitiesData
+                {activitiesLoading ? (
+                  <span>{<StyledLoader color="#000000" height={26} width={26}type="Oval"></StyledLoader>} Carregando</span>
+                ):activitiesData
                   .filter((item) => item.location === 'Auditório Principal')
-                  .filter((item) => item.date.slice(0, 10) === day)
+                  .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
                       noVacancy={item.seats - item._count.Registration > 0}
@@ -109,7 +118,7 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesData
                   .filter((item) => item.location === 'Auditório Secundário')
-                  .filter((item) => item.date.slice(0, 10) === day)
+                  .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
                       noVacancy={item.seats - item._count.Registration > 0}
@@ -141,7 +150,7 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesData
                   .filter((item) => item.location === 'Sala de Workshop')
-                  .filter((item) => item.date.slice(0, 10) === day)
+                  .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
                       noVacancy={item.seats - item._count.Registration > 0}
