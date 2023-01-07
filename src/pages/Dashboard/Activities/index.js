@@ -9,7 +9,7 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
   const [activitiesData, setActivitiesData] = useState([]);
-  const [days, setDays] = useState();
+  const [days, setDays] = useState('');
   const { paymentLoading, payment } = usePaymentPaid();
   const { activitiesLoading, activitie } = useActivities();
   const [selected, setSelected] = useState([]);
@@ -110,7 +110,7 @@ export default function Activities() {
               Domingo, 24/10
             </DayButton>
           </div>
-          <GridContainer>
+          <GridContainer days={days}>
             <div>
               <Title>Auditório Principal</Title>
               <ActivitiesContainer>
@@ -219,6 +219,7 @@ export default function Activities() {
               </ActivitiesContainer>
             </div>
           </GridContainer>
+          <EnrollButton>Increver-se</EnrollButton>
         </>
       )}
     </Wrapper>
@@ -247,7 +248,7 @@ const Wrapper = styled.div`
 
   & > div:nth-of-type(1) {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 20px;
     margin: 10px 0;
@@ -291,7 +292,7 @@ const DayButton = styled.button`
 `;
 
 const GridContainer = styled.div`
-  display: flex;
+  display: ${props => props.days === '' ? 'none' : 'flex'};
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -392,4 +393,28 @@ const Activity = styled.div`
 const StyledLoader = styled(Loader)`
   position: relative;
   top: -4.5px;
+`;
+
+const EnrollButton = styled.button`
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
+  margin-top: 20px;
+  border: none;
+  width: 162px;
+  height: 37px;
+  background: #e0e0e0;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 4px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: translateY(4px);
+  }
 `;
