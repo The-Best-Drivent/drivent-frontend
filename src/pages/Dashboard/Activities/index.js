@@ -12,6 +12,8 @@ export default function Activities() {
   const [days, setDays] = useState();
   const { paymentLoading, payment } = usePaymentPaid();
   const { activitiesLoading, activitie } = useActivities();
+  const [selected, setSelected] = useState([]);
+  const [track, setTrack] = useState([]);
 
   const [number, setNumber] = useState(-1);
 
@@ -24,12 +26,42 @@ export default function Activities() {
   async function getActivities({ day }) {
     try {
       const data = await activitie(day);
-      setActivitiesData(data);
+      const newData = data.sort((a, b) => Number(a.date.slice(11, 13)) - Number(b.date.slice(11, 13)));
+      setActivitiesData(newData);
     } catch (error) {
       console.log(error);
     }
   }
- 
+
+  function selectActivity(activity) {
+    const first = Number(activity.date.slice(11, 13));
+    let second;
+    if (Number(activity.duration) === 2) {
+      second = first + 1;
+    }
+    if(!selected.includes(activity)) {
+      if(!track.includes(first) && !track.includes(second)) {
+        setSelected([...selected, activity]);
+        if(second) {
+          setTrack([...track, first, second]);
+        } else {
+          setTrack([...track, first]);
+        }       
+      } else {
+        alert('Você não pode escolher duas atividades em um mesmo horário.');
+      }
+    } else {
+      setSelected(selected.filter(item => item !== activity));
+      if(second) {
+        setTrack(track.filter(item => item !== first && item !== second));
+      } else {
+        setTrack(track.filter(item => item !== first));
+      }
+    }
+  }
+
+  console.log(selected, track);
+
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
@@ -89,8 +121,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -121,8 +156,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -153,8 +191,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -292,7 +333,7 @@ const Activity = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f1f1f1;
+  background: ${props => props.selected === undefined ? '#f1f1f1' : props.selected.includes(props.item) ? '#D0FFDB' : '#f1f1f1'};
   border-radius: 5px;
   border: none;
   width: 100%;
