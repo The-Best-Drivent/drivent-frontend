@@ -9,9 +9,11 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
   const [activitiesData, setActivitiesData] = useState([]);
-  const [days, setDays] = useState();
+  const [days, setDays] = useState('');
   const { paymentLoading, payment } = usePaymentPaid();
   const { activitiesLoading, activitie } = useActivities();
+  const [selected, setSelected] = useState([]);
+  const [track, setTrack] = useState([]);
 
   const [number, setNumber] = useState(-1);
 
@@ -24,12 +26,42 @@ export default function Activities() {
   async function getActivities({ day }) {
     try {
       const data = await activitie(day);
-      setActivitiesData(data);
+      const newData = data.sort((a, b) => Number(a.date.slice(11, 13)) - Number(b.date.slice(11, 13)));
+      setActivitiesData(newData);
     } catch (error) {
       console.log(error);
     }
   }
- 
+
+  function selectActivity(activity) {
+    const first = Number(activity.date.slice(11, 13));
+    let second;
+    if (Number(activity.duration) === 2) {
+      second = first + 1;
+    }
+    if(!selected.includes(activity)) {
+      if(!track.includes(first) && !track.includes(second)) {
+        setSelected([...selected, activity]);
+        if(second) {
+          setTrack([...track, first, second]);
+        } else {
+          setTrack([...track, first]);
+        }       
+      } else {
+        alert('Você não pode escolher duas atividades em um mesmo horário.');
+      }
+    } else {
+      setSelected(selected.filter(item => item !== activity));
+      if(second) {
+        setTrack(track.filter(item => item !== first && item !== second));
+      } else {
+        setTrack(track.filter(item => item !== first));
+      }
+    }
+  }
+
+  console.log(selected, track);
+
   return (
     <Wrapper>
       <h1>Escolha de atividades</h1>
@@ -78,7 +110,7 @@ export default function Activities() {
               Domingo, 24/10
             </DayButton>
           </div>
-          <GridContainer>
+          <GridContainer days={days}>
             <div>
               <Title>Auditório Principal</Title>
               <ActivitiesContainer>
@@ -89,8 +121,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -121,8 +156,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -153,8 +191,11 @@ export default function Activities() {
                   .filter((item) => item.date.slice(0, 10) === days)
                   .map((item) =>
                     <Activity
+                      onClick={() => selectActivity(item)}
                       noVacancy={item.seats - item._count.Registration > 0}
                       duration={item.duration}
+                      selected={selected}
+                      item={item}
                     >
                       <div>
                         <p>{item.name}</p>
@@ -178,6 +219,7 @@ export default function Activities() {
               </ActivitiesContainer>
             </div>
           </GridContainer>
+          <EnrollButton>Increver-se</EnrollButton>
         </>
       )}
     </Wrapper>
@@ -206,7 +248,7 @@ const Wrapper = styled.div`
 
   & > div:nth-of-type(1) {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 20px;
     margin: 10px 0;
@@ -250,7 +292,7 @@ const DayButton = styled.button`
 `;
 
 const GridContainer = styled.div`
-  display: flex;
+  display: ${props => props.days === '' ? 'none' : 'flex'};
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -292,7 +334,7 @@ const Activity = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f1f1f1;
+  background: ${props => props.selected === undefined ? '#f1f1f1' : props.selected.includes(props.item) ? '#D0FFDB' : '#f1f1f1'};
   border-radius: 5px;
   border: none;
   width: 100%;
@@ -351,4 +393,28 @@ const Activity = styled.div`
 const StyledLoader = styled(Loader)`
   position: relative;
   top: -4.5px;
+`;
+
+const EnrollButton = styled.button`
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
+  margin-top: 20px;
+  border: none;
+  width: 162px;
+  height: 37px;
+  background: #e0e0e0;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 4px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: translateY(4px);
+  }
 `;
