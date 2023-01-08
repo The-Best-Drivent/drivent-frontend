@@ -5,6 +5,7 @@ import Loader from 'react-loader-spinner';
 import useActivities from '../../../hooks/api/useActivities';
 import { IoEnterOutline } from 'react-icons/io5';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
@@ -26,7 +27,7 @@ export default function Activities() {
       const data = await activitie(day);
       setActivitiesData(data);
     } catch (error) {
-      console.log(error);
+      toast('Ocorreu um erro ao buscar as atividades!');
     }
   }
  
@@ -215,6 +216,7 @@ const Wrapper = styled.div`
   span {
     display: flex;
     justify-content: center;
+    margin-top: 25%;
   }
 
   h5 {
