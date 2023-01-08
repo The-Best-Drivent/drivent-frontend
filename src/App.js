@@ -20,6 +20,7 @@ import { EventInfoProvider } from './contexts/EventInfoContext';
 import { UserProvider } from './contexts/UserContext';
 
 import useToken from './hooks/useToken';
+import Callback from './pages/Callback';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/" element={<Countdown />} />
               <Route path="/enroll" element={<Enroll />} />
               <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/callback" element={<Callback />} />
 
               <Route
                 path="/dashboard"

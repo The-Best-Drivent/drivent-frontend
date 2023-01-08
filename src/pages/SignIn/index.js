@@ -13,6 +13,8 @@ import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
 
 import useSignIn from '../../hooks/api/useSignIn';
+import { FaGithub } from 'react-icons/fa';
+import ExternalLink from '../../layouts/ExternalLink';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -54,6 +56,9 @@ export default function SignIn() {
       </Row>
       <Row>
         <Link to="/enroll">Não possui login? Inscreva-se</Link>
+      </Row>
+      <Row>
+        <ExternalLink url={'https://github.com/login/oauth/authorize?client_id='+process.env.REACT_APP_GITHUB_CLIENT_ID}><FaGithub /> <p>Login com GitHub!</p></ExternalLink>
       </Row>
     </AuthLayout>
   );

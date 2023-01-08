@@ -12,6 +12,8 @@ import Link from '../../components/Link';
 import EventInfoContext from '../../contexts/EventInfoContext';
 
 import useSignUp from '../../hooks/api/useSignUp';
+import ExternalLink from '../../layouts/ExternalLink';
+import { FaGithub } from 'react-icons/fa';
 
 export default function Enroll() {
   const [email, setEmail] = useState('');
@@ -57,6 +59,9 @@ export default function Enroll() {
       </Row>
       <Row>
         <Link to="/sign-in">Já está inscrito? Faça login</Link>
+      </Row>
+      <Row>
+        <ExternalLink url={'https://github.com/login/oauth/authorize?client_id='+process.env.REACT_APP_GITHUB_CLIENT_ID}><FaGithub /> <p>Login com GitHub!</p></ExternalLink>
       </Row>
     </AuthLayout>
   );
