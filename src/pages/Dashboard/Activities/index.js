@@ -4,8 +4,12 @@ import usePaymentPaid from '../../../hooks/api/usePayment';
 import Loader from 'react-loader-spinner';
 import useActivities from '../../../hooks/api/useActivities';
 import { IoEnterOutline } from 'react-icons/io5';
-import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { AiOutlineCloseCircle, AiOutlineCheckCircle } from 'react-icons/ai';
 import { toast } from 'react-toastify';
+import useReserveActivities from '../../../hooks/api/useReserveActivities';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import UserContext from '../../../contexts/UserContext';
 
 export default function Activities() {
   const [paymentData, setPaymentData] = useState('');
@@ -13,10 +17,12 @@ export default function Activities() {
   const [days, setDays] = useState('');
   const { paymentLoading, payment } = usePaymentPaid();
   const { activitiesLoading, activitie } = useActivities();
+  const { reserveActivities } = useReserveActivities();
   const [selected, setSelected] = useState([]);
-  const [track, setTrack] = useState([]);
-
+  const navigate = useNavigate();
   const [number, setNumber] = useState(-1);
+  const { userData: user } = useContext(UserContext);
+  const userId = user.user.id;
 
   useEffect(() => {
     if (payment) {
@@ -34,34 +40,78 @@ export default function Activities() {
     }
   }
 
+  console.log(selected);
+
   function selectActivity(activity) {
-    const first = Number(activity.date.slice(11, 13));
-    let second;
-    if (Number(activity.duration) === 2) {
-      second = first + 1;
-    }
-    if(!selected.includes(activity)) {
-      if(!track.includes(first) && !track.includes(second)) {
+    const hour = Number(activity.date.slice(11, 13));
+    const duration = Number(activity.duration);
+    let day = activity.day;
+    let verifier = true;
+    const registerVerify = (activity.Registration.map(register => register.userId)).length !== 0;
+    
+    if (activity.seats - activity._count.Registration <= 0) {
+      toast('Você não pode escolher uma atividade sem vagas');
+    } else if (registerVerify) {
+      toast('Você não pode escolher uma atividade que você já escolheu');
+    } else if (selected.length === 0 && activitiesData.map(activities => activities.Registration.map(register => register.userId).includes(userId)).includes(true)) {
+      for (let i = 0; i < duration; i++) {
+        activitiesData.map(activities => {
+          if (activities.Registration.map(register => register.userId).includes(userId)) {
+            for (let j = 0; j < activities.duration; j++) {
+              if (Number(activities.date.slice(11, 13)) + j === hour + i) {
+                if (day === activities.day) {
+                  verifier = false;
+                  setSelected(selected.filter(item => item !== activity));
+                  toast('Você não pode escolher duas atividades em um mesmo horário.');
+                  j =  activities.duration;
+                  i = duration;
+                }
+              }
+
+              if (!verifier) {
+                break;
+              }
+            }
+          }
+        });
+      }
+
+      if (verifier) {
         setSelected([...selected, activity]);
-        if(second) {
-          setTrack([...track, first, second]);
-        } else {
-          setTrack([...track, first]);
-        }       
-      } else {
-        alert('Você não pode escolher duas atividades em um mesmo horário.');
       }
-    } else {
+    } else if (selected.length === 0) {
+      setSelected([...selected, activity]);
+    } else if (selected.includes(activity)) {
       setSelected(selected.filter(item => item !== activity));
-      if(second) {
-        setTrack(track.filter(item => item !== first && item !== second));
-      } else {
-        setTrack(track.filter(item => item !== first));
-      }
+    } else {
+      selected.map(activitie => {
+        for (let i = 0; i < duration; i++) {
+          for (let j = 0; j < activitie.duration; j++) {
+            if (Number(activitie.date.slice(11, 13)) + j === hour + i) {
+              if (day === activitie.day) {
+                verifier = false;
+                setSelected(selected.filter(item => item !== activity));
+                toast('Você não pode escolher duas atividades em um mesmo horário.');
+              }
+            }
+          }
+        }
+
+        if (verifier) {
+          setSelected([...selected, activity]);
+        }
+      });
     }
   }
 
-  console.log(selected, track);
+  function postActivities(activities) {
+    if (activities.length !== 0) {
+      reserveActivities(activities);
+      navigate(0);
+    } else {
+      toast('Você precisa escolher pelo menos uma atividade para se inscrever.');
+    }
+  }
 
   return (
     <Wrapper>
@@ -117,13 +167,15 @@ export default function Activities() {
               <ActivitiesContainer>
                 {activitiesLoading ? (
                   <span>{<StyledLoader color="#000000" height={26} width={26}type="Oval"></StyledLoader>} Carregando</span>
-                ):activitiesData
+                ) : activitiesData
                   .filter((item) => item.location === 'Auditório Principal')
                   .filter((item) => item.date.slice(0, 10) === days)
-                  .map((item) =>
-                    <Activity
+                  .map((item) => {
+                    const registerVerify = (item.Registration.map(register => register.userId).includes(userId));
+
+                    return  <Activity
                       onClick={() => selectActivity(item)}
-                      noVacancy={item.seats - item._count.Registration > 0}
+                      noVacancy={registerVerify ? true : item.seats - item._count.Registration}
                       duration={item.duration}
                       selected={selected}
                       item={item}
@@ -133,7 +185,12 @@ export default function Activities() {
                         <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                       </div>
                       <div>
-                        {(item.seats - item._count.Registration) > 0 ? <>
+                        {registerVerify ? <>
+                          <AiOutlineCheckCircle
+                            size={35}
+                          ></AiOutlineCheckCircle>
+                          <span>Inscrito</span>
+                        </> : (item.seats - item._count.Registration) > 0 ? <>
                           <IoEnterOutline 
                             size={35}
                           ></IoEnterOutline>
@@ -143,10 +200,11 @@ export default function Activities() {
                             size={35}
                           ></AiOutlineCloseCircle>
                           <span>Esgotado</span>
-                        </>}
+                        </>
+                        }
                       </div>
-                    </Activity>
-                  )}
+                    </Activity>;
+                  })}
               </ActivitiesContainer>
             </div>
             <div>
@@ -155,10 +213,12 @@ export default function Activities() {
                 {activitiesData
                   .filter((item) => item.location === 'Auditório Secundário')
                   .filter((item) => item.date.slice(0, 10) === days)
-                  .map((item) =>
-                    <Activity
+                  .map((item) => {
+                    const registerVerify = (item.Registration.map(register => register.userId).includes(userId));
+
+                    return  <Activity
                       onClick={() => selectActivity(item)}
-                      noVacancy={item.seats - item._count.Registration > 0}
+                      noVacancy={registerVerify ? true : item.seats - item._count.Registration}
                       duration={item.duration}
                       selected={selected}
                       item={item}
@@ -168,7 +228,12 @@ export default function Activities() {
                         <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                       </div>
                       <div>
-                        {(item.seats - item._count.Registration) > 0 ? <>
+                        {registerVerify ? <>
+                          <AiOutlineCheckCircle
+                            size={35}
+                          ></AiOutlineCheckCircle>
+                          <span>Inscrito</span>
+                        </> : (item.seats - item._count.Registration) > 0 ? <>
                           <IoEnterOutline 
                             size={35}
                           ></IoEnterOutline>
@@ -178,10 +243,11 @@ export default function Activities() {
                             size={35}
                           ></AiOutlineCloseCircle>
                           <span>Esgotado</span>
-                        </>}
+                        </>
+                        }
                       </div>
-                    </Activity>
-                  )}
+                    </Activity>;
+                  })}
               </ActivitiesContainer>
             </div>
             <div>
@@ -190,10 +256,12 @@ export default function Activities() {
                 {activitiesData
                   .filter((item) => item.location === 'Sala de Workshop')
                   .filter((item) => item.date.slice(0, 10) === days)
-                  .map((item) =>
-                    <Activity
+                  .map((item) => {
+                    const registerVerify = (item.Registration.map(register => register.userId).includes(userId));
+
+                    return  <Activity
                       onClick={() => selectActivity(item)}
-                      noVacancy={item.seats - item._count.Registration > 0}
+                      noVacancy={registerVerify ? true : item.seats - item._count.Registration}
                       duration={item.duration}
                       selected={selected}
                       item={item}
@@ -203,7 +271,12 @@ export default function Activities() {
                         <p>{item.date.slice(11, 16)} - {Number(item.date.slice(11, 13)) + Number(item.duration)}:00</p>
                       </div>
                       <div>
-                        {(item.seats - item._count.Registration) > 0 ? <>
+                        {registerVerify ? <>
+                          <AiOutlineCheckCircle
+                            size={35}
+                          ></AiOutlineCheckCircle>
+                          <span>Inscrito</span>
+                        </> : (item.seats - item._count.Registration) > 0 ? <>
                           <IoEnterOutline 
                             size={35}
                           ></IoEnterOutline>
@@ -213,14 +286,17 @@ export default function Activities() {
                             size={35}
                           ></AiOutlineCloseCircle>
                           <span>Esgotado</span>
-                        </>}
+                        </>
+                        }
                       </div>
-                    </Activity>
-                  )}
+                    </Activity>;
+                  })}
               </ActivitiesContainer>
             </div>
           </GridContainer>
-          <EnrollButton>Increver-se</EnrollButton>
+          <EnrollButton
+            onClick={() => postActivities(selected)}
+          >Inscrever-se</EnrollButton>
         </>
       )}
     </Wrapper>
@@ -336,7 +412,7 @@ const Activity = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${props => props.selected === undefined ? '#f1f1f1' : props.selected.includes(props.item) ? '#D0FFDB' : '#f1f1f1'};
+  background: ${props => props.selected === [] ? '#f1f1f1' : props.selected.includes(props.item) || props.noVacancy === true ? '#D0FFDB' : '#f1f1f1'};
   border-radius: 5px;
   border: none;
   width: 100%;
@@ -368,7 +444,7 @@ const Activity = styled.div`
   }
 
   & > div:nth-of-type(2) {
-    color: ${(props) => (!props.noVacancy ? '#CC6666' : '#078632')};
+    color: ${(props) => (!isNaN(props.noVacancy) && props.noVacancy === 0 ? '#CC6666' : '#078632')};
     width: 30%;
     align-items: center;
     justify-content: center;
@@ -407,10 +483,11 @@ const EnrollButton = styled.button`
   margin-top: 20px;
   border: none;
   width: 162px;
-  height: 37px;
+  min-height: 37px;
   background: #e0e0e0;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 4px;
+  
   &:hover {
     cursor: pointer;
     opacity: 0.9;
