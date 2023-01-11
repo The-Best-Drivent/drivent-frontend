@@ -59,6 +59,7 @@ export default function Hotel() {
 
   async function createBooking() {
     const body = { roomId: selectedRoom.id };
+    
     try {
       const booking = await bookingApi.postBooking({ token, body });
       setBookingData(booking);
@@ -73,7 +74,7 @@ export default function Hotel() {
   }
 
   async function updateBooking() {
-    const params = bookingData.booking.id;
+    const params = bookingData.id;
     const body = { roomId: selectedRoom.id };
     try {
       const booking = await bookingApi.putBooking({ token, params, body });
@@ -99,22 +100,22 @@ export default function Hotel() {
           <span>
             <h5>Sua modalidade de ingresso não inclui hospedagem. Prossiga para a escolha de atividades</h5>
           </span>
-        ) : bookingData.booking && hotelsData !== [] && !putBooking ? (
+        ) : bookingData.Room && hotelsData !== [] && !putBooking ? (
           <>
             <h6>Você já escolheu seu quarto:</h6>
 
             <HotelsWrapper>
-              <HotelButton key={bookingData.booking.Room.Hotel.name} booking={true}>
-                <HotelImg src={bookingData.booking.Room.Hotel.image} alt={bookingData.booking.Room.Hotel.name} />
-                <h1>{bookingData.booking.Room.Hotel.name}</h1>
+              <HotelButton key={bookingData.Room.Hotel.name} booking={true}>
+                <HotelImg src={bookingData.Room.Hotel.image} alt={bookingData.Room.Hotel.name} />
+                <h1>{bookingData.Room.Hotel.name}</h1>
 
                 <h4>{'Quarto Reservado'}</h4>
                 <h2>
-                  {bookingData.booking.Room.name + (bookingData.booking.Room.capacity === 1 ? ' (Single)' : (bookingData.booking.Room.capacity === 1 ? ' (Double)' : ' (Triple)'))}
+                  {bookingData.Room.name + (bookingData.Room.capacity === 1 ? ' (Single)' : (bookingData.Room.capacity === 1 ? ' (Double)' : ' (Triple)'))}
                 </h2>
 
                 <h4>{'Pessoas no seu quarto'}</h4>
-                <h2>{bookingData._count === 1 ? 'Somente você' : 'Você e mais ' + bookingData._count}</h2>
+                <h2>{bookingData.Room._count.Booking === 1 ? 'Somente você' : 'Você e mais ' + bookingData.Room._count.Booking}</h2>
               </HotelButton>
             </HotelsWrapper>
             <ConfirmButton onClick={() => puttingBooking()}>TROCAR DE QUARTO</ConfirmButton>

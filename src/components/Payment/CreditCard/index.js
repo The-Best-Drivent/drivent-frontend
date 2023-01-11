@@ -35,8 +35,8 @@ const CreditCard = ({ ticketId }) => {
       body.cardData.expirationDate.length <= 3 ||
       body.cardData.expirationDate.length >= 6 || 
       isNaN(Number(body.cardData.expirationDate.replace('/', ''))) !== false ||
-      body.cardData.number.length <= 12 ||
-      body.cardData.number.length >= 17 || 
+      body.cardData.number.length <= 15 ||
+      body.cardData.number.length >= 20 || 
       isNaN(Number(body.cardData.number.replace('.', '').replace('-', ''))) !== false
     ) {
       toast('Coloque dados validos para realizar o pagamento!');
@@ -131,6 +131,7 @@ const CreditCard = ({ ticketId }) => {
     </>
   );
 };
+
 export default CreditCard;
 
 const Container = styled.div`
