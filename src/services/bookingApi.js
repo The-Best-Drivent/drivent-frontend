@@ -21,7 +21,6 @@ export async function postBooking({ token, body }) {
 }
 
 export async function putBooking({ token, params, body }) {
-  console.log(token);
   const response = await api.put(`/booking/${params}`, body, {
     headers: {
       Authorization: `Bearer ${token}`,
